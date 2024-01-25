@@ -1,0 +1,204 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,200;0,400;0,600;0,800;0,900;1,800;1,900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Sometype+Mono:wght@400;700&display=swap');
+
+:root {
+  --themeMainColor: #265ae9;
+  --themeSecondaryColor: #f7d13d;
+  --themeErrorColor: #7d0202;
+}
+
+* {
+  margin: 0;
+  font-family: "Montserrat";
+  color: #333333;
+}
+
+body {
+  background-color: #bdbdbd;
+}
+
+.navbar {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.navbar h1 {
+  color: var(--themeMainColor);
+  margin-bottom: 0;
+}
+
+h1 {
+  margin-bottom: 30px;
+}
+
+h4 {
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.navbar .links {
+  margin-left: auto;
+}
+
+.navbar a {
+  margin-left: 16px;
+  text-decoration: none;
+  padding: 10px;
+  transition: all 0.3s ease;
+}
+
+.navbar a:hover {
+  color: var(--themeMainColor);
+}
+
+.content {
+  width: 90vw;
+  margin: 40px auto;
+  padding: 20px;
+  max-width: 600px;
+}
+
+button {
+  text-decoration: none;
+  padding: 10px;
+  transition: all 0.3s ease;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin: 5px 0;
+}
+
+.highLink {
+  color: #fff;
+  border-radius: 6px;
+  background-color: var(--themeMainColor);
+  transition: all 0.3s ease;
+}
+
+.highLink:hover {
+  color: var(--themeMainColor);
+  background-color: #b9b9b9;
+}
+
+.item-preview {
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  background-color: #e2e2e2;
+  border-radius: 9px;
+  transition: all 0.3s ease;
+}
+
+.item-preview:hover {
+  background-color: #ffffff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.item-preview a {
+  text-decoration: none;
+}
+
+.loginForm {
+  width: 90vw;
+  margin: 20px auto;
+  padding: 0;
+  box-sizing: border-box;
+  max-width: 350px;
+}
+
+.loginForm form {
+  margin: 15px 0;
+}
+
+label {
+  width: 100%;
+  display: block;
+  margin-top: 15px;
+}
+
+input,
+textarea {
+  width: 100%;
+  margin: 5px 0;  
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.loginForm textarea {
+  max-width: 100%;
+  min-height: 150px;
+}
+
+select {
+  padding: 10px;
+  min-width: 300px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+.loginForm button {
+  background-color: var(--themeMainColor);
+  border: 1px solid var(--themeMainColor);
+  color: #fff;
+  width: 100%;
+}
+
+button:hover {
+  background-color: var(--themeSecondaryColor);
+  border: 1px solid var(--themeMainColor);
+  color: var(--themeMainColor);
+}
+
+.passInput {
+  position: relative;
+}
+.passEye {
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.3em;
+  line-height: 1.8em;
+  padding: 0 0.8em;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.25s;
+}
+.passEye:hover {
+  opacity: 0.85;
+}
+
+.countDown {
+  background-color: #f0f0f0;
+  display: flex;
+  flex-flow: column;
+  width: 100%;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0 0;
+}
+
+.countDown h1 {
+  font-family: 'Sometype Mono', monospace;
+}
+
+.itemLine {
+  display: grid;
+  grid-template-columns: 33% 33% 34%;
+  padding: 2vw 0;
+  border-bottom: 1px solid #fff;
+}
+
+.errMessage {
+  text-align: center;
+  color: var(--themeErrorColor);
+  padding: 0.2em 0;
+}

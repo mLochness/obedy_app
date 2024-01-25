@@ -1,0 +1,68 @@
+{
+  "kids": [
+    {
+      "name": "Jožko Mrkvička",
+      "email": "lorem1@ipsum.sk",
+      "pass": "lorem1",
+      "id": 1,
+      "undates": ["2022-03-25T07:05:30", "2022-06-20T06:30"],
+      "offdates":  ["2022-03-25", "2022-06-20"]
+    },
+    {
+      "name": "Danka Janková",
+      "email": "lorem2@ipsum.sk",
+      "pass": "lorem2",
+      "id": 2,
+      "undates": ["2022-03-25T07:05:30", "2022-06-20T06:30"],
+      "offdates":  ["2022-03-25", "2023-08-14"]
+    },
+    {
+      "name": "Peťko Šuška",
+      "email": "lorem3@ipsum.sk",
+      "pass": "lorem3",
+      "id": 3,
+      "undates": ["2021-11-25T07:05:37", "2022-02-20T07:20"],
+      "offdates":  ["2022-03-25", "2023-09-21"]
+    },
+    {
+      "name": "Katka Vratká",
+      "email": "lorem4@ipsum.sk",
+      "pass": "lorem4",
+      "id": 4,
+      "undates": ["2022-03-25T07:05:30", "2022-06-20T06:30"],
+      "offdates":  ["2022-03-25", "2023-06-04"]
+    },
+    {
+      "name": "Miloš Mečiar",
+      "email": "lorem5@ipsum.sk",
+      "pass": "lorem5",
+      "id": 5,
+      "undates": ["2023-03-25T07:05:30"],
+      "offdates":  ["2022-03-25", "2023-01-11"]
+    },
+    {
+      "name": "Zuzka Úzka",
+      "email": "lorem6@ipsum.sk",
+      "pass": "lorem6",
+      "id": 6,
+      "undates": [],
+      "offdates":  ["2022-03-25", "2023-09-08"]
+    },
+    {
+      "name": "Tonko Flonko",
+      "email": "lorem7@ipsum.sk",
+      "pass": "lorem7",
+      "id": 7,
+      "undates": ["2023-06-12T06:45:10", "2023-06-13T06:30"],
+      "offdates":  ["2022-03-25", "2023-05-29"]
+    },
+    {
+      "name": "Eliška Pelišková",
+      "email": "lorem8@ipsum.sk",
+      "pass": "lorem8",
+      "id": 8,
+      "undates": ["2023-06-12T06:45:10", "2023-06-13T06:30"],
+      "offdates":  []
+    }
+  ]
+}
