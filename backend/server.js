@@ -100,7 +100,7 @@ app.post('/login', async (req, res) => {
                     if (response) {
                         res.send(result);
                     } else {
-                        return res.status(400).send({ message: "Wrong password!" });
+                        return res.status(400).send({ message: "Wrong passsword!" });
                     }
                 });
                 return;
