@@ -50,37 +50,8 @@ app.get('/kids', (req, res) => {
     })
 })
 
-// app.post('/login', (req, res) => {
-//     const q = "SELECT * FROM obedy_users WHERE username = ? AND password = ?";
-//     const username = req.body.username;
-//     const password = req.body.password;
-//     const values = [username, password];
-//     console.log("values: ", values);
-//     pool.query(q, values, (err, data) => {
-//         console.log(err, data);
-//         if (err) {
-//             res.send({ err: err });
-//             console.error('error connecting: ' + err.stack);
-//             return;
-//         }
-//         else {
-//             if (data.length > 0) {
-//                 res.send("Success..");
-//                 //***************************************************
-//                 // const user = { name: username };
-//                 // const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-//                 // res.json({ accessToken: accessToken});
-//                 //***************************************************
-//                 return;
-//             } else
-//                 console.log("Wrong username/password combination!");
-//             // res.send("Wrong username/password combination!");
-//             return res.status(400).send({ error: 'Wrong username/password combination!' });
-//         }
-//     });
-// });
 
-app.post('/login', async (req, res) => {
+app.post('/login', (req, res) => {
     const q = "SELECT * FROM obedy_users WHERE username = ?";
     const username = req.body.username;
     const password = req.body.password;
@@ -96,11 +67,20 @@ app.post('/login', async (req, res) => {
         else {
             if (result.length > 0) {
                 bcrypt.compare(password, result[0].password, (error, response) => {
-                    console.log("result[0]:", result[0].password);
+                    console.log("password compare:", password, result[0].password);
+                    console.log("comparation result:", response);
+                    console.log("user role:", result[0].user_role);
                     if (response) {
-                        res.send(result);
+                        // res.send(result);
+                // ***************************************************
+                const user = { name: username };
+                const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+                res.status(200).json({ accessToken: accessToken, "user_role" : result[0].user_role, "message": "success"});
+                //***************************************************
+                return;
                     } else {
-                        return res.status(400).send({ message: "Wrong passsword!" });
+                        // return res.send({ message: "Wrong passsword!" });
+                         return res.status(400).json({ 'message': 'Wrong Password you' });
                     }
                 });
                 return;
@@ -112,28 +92,15 @@ app.post('/login', async (req, res) => {
     });
 });
 
-// app.post("/signup", (req, res) => {
-//     const q = "INSERT INTO obedy_users (username, password, email) VALUES (?)";
-//     const username = req.body.username;
-//     const password = req.body.password;
-//     const email = req.body.email;
-//     const values = [username, password, email];
-//     console.log("values: ", values);
-//     pool.query(q, [values], (err, data) => {
-//         console.log(err, data);
-//         if (err) return res.json({ error: err.sqlMessage });
-//         //else return res.json({ data });
-//         else return res.json(req.body);
-//     });
-// });
 
 app.post("/signup", (req, res) => {
-    const q = "INSERT INTO obedy_users (username, password, email) VALUES (?,?,?)";
+    const q = "INSERT INTO obedy_users (username, password, email, user_role) VALUES (?,?,?,?)";
     const username = req.body.username;
     const password = req.body.password;
     const email = req.body.email;
+    const role = req.body.role;
     bcrypt.hash(password, saltRound, (err, hash) => {
-        const values = [username, hash, email];
+        const values = [username, hash, email, role];
         console.log("values: ", values);
         pool.query(q, values, (err, data) => {
             console.log(err, data);

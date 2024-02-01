@@ -9,6 +9,7 @@ const Signup = () => {
   const [isPending, setIsPending] = useState(false);
   const redirect = useNavigate();
   const [errors, setErrors] = useState([]);
+  const role = "user";
 
   const [passVisibility, setPassVisibility] = useState(false);
   const passState = (passVisibility ? "password" : "text");
@@ -26,7 +27,8 @@ const Signup = () => {
     const newUser = {
       username,
       password,
-      email
+      email,
+      role
     };
 
     // Validate the user input

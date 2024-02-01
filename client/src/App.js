@@ -9,6 +9,7 @@ import Login from './Login';
 import AddKid from './AddKid';
 import Countdown from './Countdown';
 import UserDashboard from './user/UserDashboard';
+import AdminDashboard from './admin/AdminDashboard';
 import UsersList from './UsersList';
 import KidsList from './KidsList';
 //import Userfront from "@userfront/core";
@@ -37,6 +38,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/udashboard" element={<UserDashboard />} />
+            <Route path="/adashboard" element={<AdminDashboard />} />
             <Route path="/addkid" element={<AddKid />} />
             <Route path="/kids" element={<KidsList />} />
             <Route path="/users" element={<UsersList />} />
