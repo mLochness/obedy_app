@@ -9,7 +9,7 @@ const Countdown = () => {
   tomorrow.setDate(today.getDate() + 1);
   
   var dayOfWeek = today.getDay();
-  const weekdays = ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"];
+  //const weekdays = ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"];
   // var isWeekend = (dayOfWeek === 6) || (dayOfWeek === 0);
   // console.log('is it weekend?', isWeekend, weekdays[dayOfWeek]);
   if (dayOfWeek === 5) {

@@ -1,21 +1,24 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect, useContext } from 'react';
+import { AuthContext } from "./auth/AuthContext";
+import { Link } from 'react-router-dom';
 
 const Login = () => {
+  const {setToken} = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isPending, setIsPending] = useState(false);
-  const redirect = useNavigate();
+  //const redirect = useNavigate();
   const [errors, setErrors] = useState([]);
   const [passVisibility, setPassVisibility] = useState(false);
-  const passState = (passVisibility ? "password" : "text");
+  const passState = (passVisibility ? "text" : "password");
   const [inputType, setInputType] = useState(passState);
+
+  useEffect(() => {
+    setInputType(passState);
+}, [passVisibility, passState]);
 
   const passToggle = () => {
     setPassVisibility(!passVisibility);
-    setInputType(passState);
-    console.log("toggle...");
-    console.log("passVisibility: ", passVisibility);
   }
 
   const handleSubmit = (e) => {
@@ -34,38 +37,40 @@ const Login = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("response data:", data);
+        //console.log("response data:", data);
 
         if (data.message === "success") {
           
+          const loginStorageObj = {
+            accessToken : data.accessToken,
+            userID : data.user_id,
+            userName: data.user_name,
+            userRole: data.user_role,
+          }
+          console.log("to storage:", data.accessToken, data.user_id, data.user_name, data.user_role);
+          localStorage.setItem("loginStorage", JSON.stringify(loginStorageObj));
+          setToken(data.accessToken);
           setIsPending(false);
-          if (data.user_role === "user") {
-            redirect('/udashboard');
-          }
-          if (data.user_role === "admin") {
-            redirect('/adashboard');
-          }
-          localStorage.setItem("accessToken", data.accessToken);
-          // setUsername("");
-          // setPassword("");
+
+          //setUsername("");
+          //setPassword("");
           // router.push("/jwt-safehouse");
+          
+
+          // if (data.user_role === "user") {
+          //   console.log("Login - user role?:", data.user_role);
+          //   redirect('/udashboard');
+          // }
+          // if (data.user_role === "admin") {
+          //   console.log("Login - user role?:", data.user_role);
+          //   redirect('/adashboard');
+          // }
 
         } else {
           setIsPending(false);
+          localStorage.removeItem("loginStorage");
           setErrors([data.message]);
         }
-
-        // if (response.status === 200) {
-        //   //if (response.message === "OK") {
-        //   setIsPending(false);
-        //   // Redirect the user ..
-        //   redirect('/udashboard');
-        //   console.log("logged in...");
-        // } else {
-        //   setIsPending(false);
-        //   setErrors([response.status, " Wrong username/password combination!"]);
-        //   console.log(response.data);
-        // }
       })
       .catch((error) => {
         setErrors([error.message]);
@@ -89,7 +94,7 @@ const Login = () => {
             value={password}
             placeholder="Heslo"
             onChange={(e) => setPassword(e.target.value)}
-            onKeyUp={(e) => setInputType("password")}
+            onKeyUp={() => setPassVisibility(false)}
           />
           <span className='passEye' onClick={passToggle}>👁</span>
         </div>
@@ -97,7 +102,7 @@ const Login = () => {
         {!isPending && <button>Prihlásiť</button>}
         {isPending && <button disabled>Prihlasujem...</button>}
       </form>
-      <div>Nemáte účet? <Link to="/signup">Zaregistrujte sa.</Link></div>
+      <div className='underFormLine'>Nemáte účet? <Link to="/signup">Zaregistrujte sa.</Link></div>
     </div>
   );
 }

@@ -9,11 +9,6 @@ const saltRound = 10;
 const app = express();
 
 app.use(cors()
-    // {
-    // origin: 'http://localhost:3000',
-    // methods: ['GET', 'POST'],
-    // credentials: true,
-    // }
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -31,23 +26,6 @@ const pool = mysql.createPool({
     user: 'root',
     password: 'password',
     database: 'obedy_app'
-})
-
-
-app.get('/users', (req, res) => {
-    const sql = "SELECT * FROM obedy_users";
-    pool.query(sql, (err, data) => {
-        if (err) return res.json(err);
-        return res.json(data);
-    })
-})
-app.get('/kids', (req, res) => {
-    // const sql = "SELECT kid_id, kid_name, kid_surname, DATE_FORMAT(kid_birth, '%d/%m/%Y') FROM obedy_kids";
-    const sql = "SELECT * FROM obedy_kids";
-    pool.query(sql, (err, data) => {
-        if (err) return res.json(err);
-        return res.json(data);
-    })
 })
 
 
@@ -71,16 +49,21 @@ app.post('/login', (req, res) => {
                     console.log("comparation result:", response);
                     console.log("user role:", result[0].user_role);
                     if (response) {
-                        // res.send(result);
                 // ***************************************************
                 const user = { name: username };
                 const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-                res.status(200).json({ accessToken: accessToken, "user_role" : result[0].user_role, "message": "success"});
+                res.status(200).json({ 
+                    accessToken: accessToken, 
+                    "user_role" : result[0].user_role, 
+                    "user_id" : result[0].user_id,
+                    "user_name": username,
+                    "message": "success"
+                });
                 //***************************************************
                 return;
                     } else {
                         // return res.send({ message: "Wrong passsword!" });
-                         return res.status(400).json({ 'message': 'Wrong Password you' });
+                         return res.status(400).json({ message: 'Wrong username or password' });
                     }
                 });
                 return;
@@ -104,9 +87,12 @@ app.post("/signup", (req, res) => {
         console.log("values: ", values);
         pool.query(q, values, (err, data) => {
             console.log(err, data);
-            if (err) return res.json({ error: err.sqlMessage });
+            //if (err) return res.status(400).json({ error: err.sqlMessage });
+            if (err) return res.status(400).json({message: err.sqlMessage });
+            
             //else return res.json({ data });
-            else return res.json(req.body);
+            //else return res.status(200).json(req.body);
+            else return res.status(200).json({ message: 'success' });
         });
     });
 
@@ -122,11 +108,28 @@ app.post("/addkid", (req, res) => {
     console.log("values: ", values);
     pool.query(q, [values], (err, data) => {
         console.log(err, data);
-        if (err) return res.json({ error: err.sqlMessage });
+        if (err) return res.json({err});
         //else return res.json({ data });
         else return res.json(req.body);
     });
 });
+
+app.get('/users', (req, res) => {
+    const sql = "SELECT * FROM obedy_users";
+    pool.query(sql, (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+})
+
+app.get('/kids', (req, res) => {
+    // const sql = "SELECT kid_id, kid_name, kid_surname, DATE_FORMAT(kid_birth, '%d/%m/%Y') FROM obedy_kids";
+    const sql = "SELECT * FROM obedy_kids";
+    pool.query(sql, (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+})
 
 app.listen(3001, () => {
     console.log('Server started on port 3001...')

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Signup = () => {
 
@@ -12,14 +12,17 @@ const Signup = () => {
   const role = "user";
 
   const [passVisibility, setPassVisibility] = useState(false);
-  const passState = (passVisibility ? "password" : "text");
+  const passState = (passVisibility ? "text" : "password");
   const [inputType, setInputType] = useState(passState);
 
-  const passToggle = () => {
-    setPassVisibility(!passVisibility);
+  useEffect(() => {
     setInputType(passState);
-    console.log("toggle...");
-    console.log("passVisibility: ", passVisibility);
+    console.log("useEffect: ", passState, "/ toggle passVisibility: ", passVisibility);
+}, [passVisibility, passState]);
+
+  const passToggle = () => {
+    console.log("initial passVisibility: ", passVisibility);
+    setPassVisibility(!passVisibility);
   }
 
   const handleSignin = (event) => {
@@ -33,15 +36,15 @@ const Signup = () => {
 
     // Validate the user input
     if (!username) {
-      setErrors(["Please enter your name."]);
+      setErrors(["Zadajte prosím vaše meno."]);
       return;
     }
     if (!password) {
-      setErrors(["Please enter your password."]);
+      setErrors(["Zvoľte si prosím heslo."]);
       return;
     }
     if (!email) {
-      setErrors(["Please enter your email."]);
+      setErrors(["Prosím zadajte váš email."]);
       return;
     }
 
@@ -56,14 +59,30 @@ const Signup = () => {
       },
       body: JSON.stringify(newUser)
     })
-      .then((response) => {
-        if (response.status === 200) {
+      //.then((response) => {
+      .then((response) => response.json())
+      .then((data) => {
+        //if (data.status === 200) {
+        if (data.message ===  "success") {
           // Redirect the user to the home page
           console.log("new user added");
           setIsPending(false);
           redirect('/login');
         } else {
-          setErrors([response.statusText]);
+          setIsPending(false);
+          // setErrors([data.message]);
+          var errMessage = data.message;
+          var uNameErr = errMessage.includes("username");
+          var emailErr = errMessage.includes("email");
+          if (uNameErr) {
+            setErrors("Užívateľ s týmto menom už existuje.");
+          }
+          else if (emailErr) {
+            setErrors("Tento e-mail už je zaregistrovaný.");
+          }
+          else {
+            setErrors([errMessage]);
+          }
         }
         console.log("newUser: ", newUser);
       })
@@ -78,34 +97,34 @@ const Signup = () => {
       <div className='loginForm'>
         <h2>Registrácia</h2>
         <form>
-          <label>Meno užívateľa</label>
           <input type="text" required
             value={username}
-            placeholder='Meno'
+            placeholder='Meno užívateľa'
             onChange={(e) => setUsername(e.target.value)}
           />
-          <label>Heslo</label>
           <div className="passInput">
-                <input type={inputType}
-                required 
-                value={password}
-                placeholder="Heslo"
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyUp={ (e) => setInputType("password") }
-                />
-                <span className='passEye' onClick={ passToggle }>👁</span>
-                </div>
+            <input type={inputType}
+              required
+              value={password}
+              placeholder="Zvoľte si heslo"
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyUp={() => setPassVisibility(false)}
+              
+            />
+            <span className='passEye' onClick={passToggle}>👁</span>
+          </div>
 
-          <label>Email</label>
-          <input type="email" required
+          <input type="email"
+            required
             value={email}
-            placeholder='Email'
+            placeholder='Váš E-mail'
             onChange={(e) => setEmail(e.target.value)} />
 
           {!isPending && <button onClick={handleSignin}> Registrovať</button>}
-          {isPending && <button disabled>Prihlasujem...</button>}
+          {isPending && <button disabled>Registrujem...</button>}
         </form>
-        <p>{errors}</p>
+        <p className='errMessage'>{errors}</p>
+        <div className='underFormLine'>Máte už účet? <Link to="/login">Prihláste sa.</Link></div>
       </div>
     </div>
   );
