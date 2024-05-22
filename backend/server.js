@@ -123,9 +123,24 @@ app.get('/users', (req, res) => {
 })
 
 app.get('/kids', (req, res) => {
-    // const sql = "SELECT kid_id, kid_name, kid_surname, DATE_FORMAT(kid_birth, '%d/%m/%Y') FROM obedy_kids";
+    //const sql = "SELECT kid_id, kid_name, kid_surname, kid_birth FROM obedy_kids";
+    //const sql = "SELECT kid_id, kid_name, kid_surname, DATE_FORMAT(kid_birth, '%d/%m/%Y') FROM obedy_kids";
     const sql = "SELECT * FROM obedy_kids";
     pool.query(sql, (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    })
+})
+
+app.get('/userkids', (req, res) => {
+    //const userID = "17";
+    const userID = req.query.user_id;
+    console.log("req.query", req.query);
+    console.log("userID:", userID);
+    const sql = "SELECT * FROM obedy_kids WHERE user_id=?";
+    //const sql = "SELECT kid_id, kid_name, kid_surname, kid_birth, user_id FROM obedy_kids";
+    //pool.query(sql, (err, data) => {
+    pool.query(sql, [userID],(err, data) => {
         if (err) return res.json(err);
         return res.json(data);
     })

@@ -1,6 +1,7 @@
-// import { useContext } from "react"; 
-// import { AuthContext } from "../auth/AuthContext";
-// import { useNavigate } from "react-router-dom";
+
+
+//import KidDetails from "../KidDetails";
+import UserKids from "../UserKids";
 
 const UserDashboard = () => { 
 
@@ -20,7 +21,10 @@ const UserDashboard = () => {
   // console.log("token uDashboard:", token.token)
 
     return (
+      <div>
       <h2>User Dashboard</h2>
+      <UserKids />
+      </div>
     );
   }
 

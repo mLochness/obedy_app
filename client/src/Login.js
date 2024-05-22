@@ -51,21 +51,6 @@ const Login = () => {
           localStorage.setItem("loginStorage", JSON.stringify(loginStorageObj));
           setToken(data.accessToken);
           setIsPending(false);
-
-          //setUsername("");
-          //setPassword("");
-          // router.push("/jwt-safehouse");
-          
-
-          // if (data.user_role === "user") {
-          //   console.log("Login - user role?:", data.user_role);
-          //   redirect('/udashboard');
-          // }
-          // if (data.user_role === "admin") {
-          //   console.log("Login - user role?:", data.user_role);
-          //   redirect('/adashboard');
-          // }
-
         } else {
           setIsPending(false);
           localStorage.removeItem("loginStorage");

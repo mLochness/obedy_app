@@ -7,30 +7,38 @@ const Countdown = () => {
   var today = new Date();
   let tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
-  
+  var now = new Date().getTime();
   var dayOfWeek = today.getDay();
-  //const weekdays = ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"];
-  // var isWeekend = (dayOfWeek === 6) || (dayOfWeek === 0);
-  // console.log('is it weekend?', isWeekend, weekdays[dayOfWeek]);
+  const dayNames = ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"];
+  var showDayName = dayNames[dayOfWeek];
+  
+  //console.log(dayOfWeek);
   if (dayOfWeek === 5) {
     tomorrow.setDate(today.getDate() + 3);
+    showDayName = dayNames[dayOfWeek - 4];
   }
   if (dayOfWeek === 6) {
     tomorrow.setDate(today.getDate() + 2);
-    //console.log(weekdays[dayOfWeek]);
+    today.setDate(today.getDate() + 2);
+    showDayName = dayNames[dayOfWeek - 5];
+  }
+  if (dayOfWeek === 0) {
+    tomorrow.setDate(today.getDate() + 1);
+    today.setDate(today.getDate() + 1);
+    showDayName = dayNames[dayOfWeek + 1];
   }
   let todayLimit = today.setHours(7, 30, 0);
-  //console.log('whatDay?', weekdays[dayOfWeek]);
   let nextLimit = tomorrow.setHours(7, 30, 0);
-  var now = new Date().getTime();
   var countDownDate = new Date();
 
   if (now < todayLimit) {
-    countDownDate = todayLimit
+    countDownDate = todayLimit;
+    //showDayName = dayNames[dayOfWeek];
   } else {
-    countDownDate = nextLimit
+    countDownDate = nextLimit;
+    showDayName = dayNames[dayOfWeek + 1];
   }
-  //console.log('tomorrow: ', tomorrow);
+  //console.log('showDayName: ', showDayName);
   var cDate = new Date(countDownDate);
   var dateOutput = (cDate.getDate() + " / " + (cDate.getMonth() + 1) + " / " + cDate.getFullYear());
 
@@ -54,11 +62,9 @@ const Countdown = () => {
     return () => clearInterval(interval);
   }, [count]);
 
-
-
   return (
     <div className='countDown'>
-      <p>Do najbližšieho termínu {"( " + dateOutput + " )"} ostáva</p>
+      <p>Do najbližšieho termínu {"(\u00A0" + showDayName + " " + dateOutput + "\u00A0)"} ostáva</p>
       <h1>{timeLeft}</h1>
     </div>);
 

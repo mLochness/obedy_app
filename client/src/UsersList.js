@@ -12,20 +12,24 @@ function UsersList() {
 
   useEffect(() => {
     fetchInfo();
-    
   }, [])
 
 
   return (
     <div>
       <p>Zaregistrovaní používatelia:</p>
-      <div>
-        {data.map((dataObj, index) => {
-          return (
-          <div className='testline' key={dataObj.user_id}> {dataObj.user_id} : {dataObj.username} </div>
-          )
-        })}
-      </div>
+      <div className='itemLine itemLineHead'> 
+            <div>ID</div> <div>Meno</div> <div>E-mail</div>
+            </div>
+        <div>
+          {data.map((dataObj) => {
+            return (
+            <div className='itemLine' key={dataObj.user_id}> 
+            <div>{dataObj.user_id}</div> <div>{dataObj.username}</div> <div>{dataObj.email}</div>
+            </div>
+            )
+          })}
+        </div>
     </div>
   )
 }

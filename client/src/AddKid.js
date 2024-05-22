@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useContext } from "react";
+import { AuthContext } from './auth/AuthContext';
 
-const AddKid = () => {
+const AddKid = ({ addKidOK, modalMsg }) => {
     const [kidName, setKidName] = useState('');
     const [kidSurname, setKidSurame] = useState('');
     const [birthDate, setBirthDate] = useState('');
-    const [userID, setUserID] = useState('1');
+    const { userID } = useContext(AuthContext);
     const [isPending, setIsPending] = useState(false);
     const redirect = useNavigate();
 
@@ -22,7 +24,9 @@ const AddKid = () => {
         }).then(() => {
             console.log("kid added");
             setIsPending(false);
-            redirect('/kids');
+            redirect('/udashboard');
+            addKidOK();
+            modalMsg("Dieťa bolo úspešne pridané");
         })
 
     }

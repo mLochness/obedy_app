@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-const Signup = () => {
+const Signup = ({ signupOK, modalMsg }) => {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -59,7 +59,6 @@ const Signup = () => {
       },
       body: JSON.stringify(newUser)
     })
-      //.then((response) => {
       .then((response) => response.json())
       .then((data) => {
         //if (data.status === 200) {
@@ -68,6 +67,8 @@ const Signup = () => {
           console.log("new user added");
           setIsPending(false);
           redirect('/login');
+          modalMsg("Účet bol vytvorený, môžete sa prihlásiť");
+          signupOK();
         } else {
           setIsPending(false);
           // setErrors([data.message]);

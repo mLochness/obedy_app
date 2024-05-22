@@ -3,11 +3,11 @@ import useFetch from "./useFetch";
 
 const KidDetails = () => {
     const { id } = useParams();
-    const { data: kid, error, isPending } = useFetch('http://localhost:3200/kids/' + id);
+    const { data: kid, error, isPending } = useFetch('http://localhost:3001/kids/' + id);
     const redirect = useNavigate();
 
     const handleClick = () => {
-        fetch('http://localhost:3200/kids/' + kid.id, {
+        fetch('http://localhost:3001/kids/' + kid.id, {
             method: 'DELETE'
         }).then(() => {
             redirect('/');

@@ -1,23 +1,23 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from "./auth/AuthContext";
-//import { useIdleTimeout } from "./useIdleTimeout";
+import { useIdle } from "./useIdle";
 
 
 const IdleModal = () => {
-    const [openModal, setOpenModal] = useState(false)
+    const [openModal, setOpenModal] = useState(true)
     const { logout } = useContext(AuthContext);
     const handleIdle = () => {
         setOpenModal(true);
     }
-    const { idleTimer } = useIdleTimeout({ onIdle: handleIdle, idleTime: 5 })
+    const { idleTimer } = useIdle({ onIdle: handleIdle, idleTime: 5 });
     const stay = () => {
         setOpenModal(false)
         idleTimer.reset()
-    }
+    };
     const handleLogout = () => {
         logout()
         setOpenModal(false)
-    }
+    };
     return (
     <div className="idleModal">
         <modal show={openModal} onHide={stay}>
