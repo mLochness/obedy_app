@@ -13,10 +13,7 @@ const Countdown = () => {
   var showDayName = dayNames[dayOfWeek];
   
   //console.log(dayOfWeek);
-  if (dayOfWeek === 5) {
-    tomorrow.setDate(today.getDate() + 3);
-    showDayName = dayNames[dayOfWeek - 4];
-  }
+  
   if (dayOfWeek === 6) {
     tomorrow.setDate(today.getDate() + 2);
     today.setDate(today.getDate() + 2);
@@ -27,18 +24,28 @@ const Countdown = () => {
     today.setDate(today.getDate() + 1);
     showDayName = dayNames[dayOfWeek + 1];
   }
+
   let todayLimit = today.setHours(7, 30, 0);
+  
+  if (dayOfWeek === 5 && now > todayLimit) {
+    tomorrow.setDate(today.getDate() + 3);
+    showDayName = dayNames[dayOfWeek - 4];
+  }
+
   let nextLimit = tomorrow.setHours(7, 30, 0);
   var countDownDate = new Date();
 
-  if (now < todayLimit) {
+  if ((now < todayLimit) && (dayOfWeek !== 0 && dayOfWeek !== 6))  {
     countDownDate = todayLimit;
-    //showDayName = dayNames[dayOfWeek];
-  } else {
+    showDayName = dayNames[dayOfWeek];
+  } 
+
+  else {
     countDownDate = nextLimit;
     showDayName = dayNames[dayOfWeek + 1];
   }
   //console.log('showDayName: ', showDayName);
+  //console.log(now < todayLimit && (dayOfWeek !== 0 || 5 || 6));
   var cDate = new Date(countDownDate);
   var dateOutput = (cDate.getDate() + " / " + (cDate.getMonth() + 1) + " / " + cDate.getFullYear());
 
@@ -50,6 +57,8 @@ const Countdown = () => {
   var seconds = Math.floor((distance % (1000 * 60)) / 1000);
   var secDisplay = seconds.toString().length === 1 ? "0" + seconds : seconds;
   var timeLeft = days + "d " + hours + "h " + minDisplay + "m " + secDisplay + "s ";
+
+  //console.log(nextLimit);
 
   useEffect(() => {
 

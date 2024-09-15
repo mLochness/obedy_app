@@ -25,7 +25,7 @@ const Navbar = () => {
                 {userRole === "admin" && <Link to="/kids">Kids</Link>}
                 {userRole === "user" && <Link to="/udashboard">Domov</Link>}
                 {userRole === "user" && <Link to="/addkid">Pridať dieťa</Link>}
-                {!token && <Link id="login" className="highLink" to="/login">Prihlásenie</Link>}
+                {!token && <Link id="login" className="highLink" to="/login">Prihlásenie ☻</Link>}
                 {token && <Logout />}
             </div>
         </nav>

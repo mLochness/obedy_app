@@ -114,6 +114,24 @@ app.post("/addkid", (req, res) => {
     });
 });
 
+app.post("/addskip", (req, res) => {
+    const q = "INSERT INTO obedy_skips (kid_id, skip_date) VALUES (?)";
+    // const kidID = req.body.kidID;
+    // const skipDate = req.body.skipDate;
+    //***************************************************************
+    const kidID = 111;
+    const skipDate = "2024-12-31";
+    //***************************************************************
+    const values = [kidID, skipDate];
+    console.log("values: ", values);
+    pool.query(q, [values], (err, data) => {
+        console.log(err, data);
+        if (err) return res.json({err});
+        //else return res.json({ data });
+        else return res.json(req.body);
+    });
+});
+
 app.get('/users', (req, res) => {
     const sql = "SELECT * FROM obedy_users";
     pool.query(sql, (err, data) => {
@@ -133,7 +151,6 @@ app.get('/kids', (req, res) => {
 })
 
 app.get('/userkids', (req, res) => {
-    //const userID = "17";
     const userID = req.query.user_id;
     console.log("req.query", req.query);
     console.log("userID:", userID);

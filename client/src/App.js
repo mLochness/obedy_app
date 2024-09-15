@@ -17,7 +17,7 @@ import Modal from './Modal';
 const App = () => {
 
   const [isModalOpen, setModalOpen] = useState(false);
-  const [modalTxt, setModalTxt] = useState("+");
+  const [modalTxt, setModalTxt] = useState("");
   const modalMsg = message => {
     setModalTxt(message);
   }
@@ -28,10 +28,10 @@ const App = () => {
     setModalOpen(false);
     setModalTxt("-")
   };
-  const handleModalButton = () => {
-    setModalTxt("Stlačili ste? Tu som.")
-    setModalOpen(true);
-  }
+  // const handleModalButton = () => {
+  //   setModalTxt("Stlačili ste? Tu som.")
+  //   setModalOpen(true);
+  // }
 
   return (
     <div className="App">
@@ -44,7 +44,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup modalMsg={modalMsg} signupOK={handleOpenModal} />} />
           <Route element={<PrivateRoutes modalMsg={modalMsg} idleLogout={handleOpenModal}/>}>
-            <Route element={<UserDashboard />} path="/udashboard" />
+            <Route element={<UserDashboard modalMsg={modalMsg} kidsAction={handleOpenModal}/>} path="/udashboard" />
             <Route element={<AdminDashboard />} path="/adashboard" />
             <Route element={<AddKid modalMsg={modalMsg} addKidOK={handleOpenModal} />} path="/addkid" />
             <Route element={<KidsList />} path="/kids" />
@@ -58,9 +58,6 @@ const App = () => {
         >
           <p>{modalTxt}</p>
         </Modal>
-        {/* <button onClick={handleModalButton}>
-          Test Modal
-        </button> */}
       </div>
     </div>
   );

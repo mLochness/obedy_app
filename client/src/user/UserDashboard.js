@@ -1,29 +1,19 @@
 
 
-//import KidDetails from "../KidDetails";
 import UserKids from "../UserKids";
 
-const UserDashboard = () => { 
+const UserDashboard = ({ modalMsg, kidsAction }) => { 
+  
 
-  // // const { token, isPending } = useContext(AuthContext);
-  // const token = useContext(AuthContext);
-  // const redirect = useNavigate();
-
-  // // if (isPending) {
-  // //   console.log("isPending...");
-  // //   return null;
-  // // }
-  // if (!token) {
-  //   //return <Navigate to="/login" replace />;
-  //   redirect('/login');
-  //   return;
-  // }
-  // console.log("token uDashboard:", token.token)
+  const handleKidAction = (data) => {
+    modalMsg(data);
+    kidsAction();
+  }
 
     return (
       <div>
-      <h2>User Dashboard</h2>
-      <UserKids />
+      <h2>Moje deti</h2>
+      <UserKids actionMessage={handleKidAction}/>
       </div>
     );
   }

@@ -70,7 +70,7 @@ button {
   padding: 10px;
   transition: all 0.3s ease;
   border-radius: 6px;
-  border: none;
+  border: 1px solid white;
   cursor: pointer;
   margin: 5px 0;
 }
