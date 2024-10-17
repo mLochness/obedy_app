@@ -17,8 +17,8 @@ const PrivateRoutes = ({ modalMsg, idleLogout }) => {
         modalMsg("Prebehlo automatické odhlásenie");
         idleLogout();
     }
-    const { isIdle } = useIdle({ onIdle: logout, idleTime: 15 });
-    // Idle timer -------------------------------------- 15 min.
+    const { isIdle } = useIdle({ onIdle: logout, idleTime: 10 });
+    // Idle timer -------------------------------------- 10 min.
 
     console.log("PrivateRoutes AuthContext:", token)
     return (

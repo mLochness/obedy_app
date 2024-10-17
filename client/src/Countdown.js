@@ -5,47 +5,48 @@ const Countdown = () => {
   const [count, setCount] = useState(0);
 
   var today = new Date();
-  let tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
+  let nextDay = new Date();
+  nextDay.setDate(today.getDate() + 1);
   var now = new Date().getTime();
   var dayOfWeek = today.getDay();
   const dayNames = ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"];
   var showDayName = dayNames[dayOfWeek];
-  
-  //console.log(dayOfWeek);
-  
-  if (dayOfWeek === 6) {
-    tomorrow.setDate(today.getDate() + 2);
-    today.setDate(today.getDate() + 2);
-    showDayName = dayNames[dayOfWeek - 5];
-  }
-  if (dayOfWeek === 0) {
-    tomorrow.setDate(today.getDate() + 1);
-    today.setDate(today.getDate() + 1);
-    showDayName = dayNames[dayOfWeek + 1];
-  }
-
   let todayLimit = today.setHours(7, 30, 0);
+  let nextLimit = nextDay.setHours(7, 30, 0);
+  var countDownDate = nextLimit;
   
-  if (dayOfWeek === 5 && now > todayLimit) {
-    tomorrow.setDate(today.getDate() + 3);
-    showDayName = dayNames[dayOfWeek - 4];
+
+  if (dayOfWeek === 6) {
+    nextLimit = nextDay.setDate(today.getDate() + 2);
+    //today.setDate(today.getDate() + 2);
+    showDayName = dayNames[1];
+    countDownDate = nextLimit
   }
-
-  let nextLimit = tomorrow.setHours(7, 30, 0);
-  var countDownDate = new Date();
-
-  if ((now < todayLimit) && (dayOfWeek !== 0 && dayOfWeek !== 6))  {
+  else if (dayOfWeek === 0) {
+    nextLimit = nextDay.setDate(today.getDate() + 1);
+    //today.setDate(today.getDate() + 1);
+    showDayName = dayNames[1];
+    countDownDate = nextLimit
+  }
+  else if (dayOfWeek === 5 && now > todayLimit) {
+    nextDay.setDate(today.getDate() + 3);
+    showDayName = dayNames[1];
+    nextLimit = nextDay.setHours(7, 30, 0);
+    countDownDate = nextLimit;
+  }
+  else if ((now < todayLimit) && (dayOfWeek !== 0 && dayOfWeek !== 6))  {
     countDownDate = todayLimit;
     showDayName = dayNames[dayOfWeek];
   } 
-
   else {
-    countDownDate = nextLimit;
     showDayName = dayNames[dayOfWeek + 1];
+    countDownDate = nextLimit;
   }
-  //console.log('showDayName: ', showDayName);
+  
   //console.log(now < todayLimit && (dayOfWeek !== 0 || 5 || 6));
+  //nextLimit = nextDay.setHours(7, 30, 0);
+  //countDownDate = nextLimit;
+  
   var cDate = new Date(countDownDate);
   var dateOutput = (cDate.getDate() + " / " + (cDate.getMonth() + 1) + " / " + cDate.getFullYear());
 

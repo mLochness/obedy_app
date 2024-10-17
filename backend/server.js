@@ -116,19 +116,17 @@ app.post("/addkid", (req, res) => {
 
 app.post("/addskip", (req, res) => {
     const q = "INSERT INTO obedy_skips (kid_id, skip_date) VALUES (?)";
-    // const kidID = req.body.kidID;
-    // const skipDate = req.body.skipDate;
-    //***************************************************************
-    const kidID = 111;
-    const skipDate = "2024-12-31";
-    //***************************************************************
+    const kidID = req.body.kidID;
+    const skipDate = req.body.skipDate;
     const values = [kidID, skipDate];
     console.log("values: ", values);
     pool.query(q, [values], (err, data) => {
         console.log(err, data);
-        if (err) return res.json({err});
+        if (err) return res.status(400).json({message: "Nastala chyba, server message" });
+        //if (err) return res.status(400).json({err});
         //else return res.json({ data });
-        else return res.json(req.body);
+        //else return res.json(req.body);
+        else return res.status(200).json({ message: 'success' });
     });
 });
 
@@ -161,6 +159,7 @@ app.get('/userkids', (req, res) => {
         if (err) return res.json(err);
         return res.json(data);
     })
+    console.log("/userkids RUN");
 })
 
 app.listen(3001, () => {

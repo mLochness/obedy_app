@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
       isPending,
       setIsPending
     }),
-    [token, isPending, userRole]
+    [token, isPending, userRole, userID]
   );
 
 

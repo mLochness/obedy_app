@@ -87,8 +87,8 @@ const Signup = ({ signupOK, modalMsg }) => {
         }
         console.log("newUser: ", newUser);
       })
-      .catch((error) => {
-        setErrors([error.message]);
+      .catch((err) => {
+        setErrors([err.message]);
       });
   };
 

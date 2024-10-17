@@ -9,6 +9,7 @@ const AddKid = ({ addKidOK, modalMsg }) => {
     const [birthDate, setBirthDate] = useState('');
     const { userID } = useContext(AuthContext);
     const [isPending, setIsPending] = useState(false);
+    const [errors, setErrors] = useState([]);
     const redirect = useNavigate();
 
     const handleSubmit = (e) => {
@@ -28,6 +29,9 @@ const AddKid = ({ addKidOK, modalMsg }) => {
             addKidOK();
             modalMsg("Dieťa bolo úspešne pridané");
         })
+        .catch((err) => {
+            setErrors([err.message]);
+          });
 
     }
 
@@ -59,6 +63,7 @@ const AddKid = ({ addKidOK, modalMsg }) => {
                 { !isPending && <button>Odoslať</button> }
                 { isPending && <button disabled>Pridávam drobca...</button> }
             </form>
+            <p className='errMessage'>{errors}</p>
         </div>
     );
 }

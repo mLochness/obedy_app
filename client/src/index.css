@@ -201,9 +201,13 @@ button:hover {
 
 .itemLine {
   display: grid;
-  grid-template-columns: 33% 33% 34%;
-  padding: 2vw 0;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 1em 0;
   border-bottom: 1px solid #fff;
+}
+.itemLine > div {
+  display: flex;
+  align-items: center;
 }
 .itemLineHead {
   font-weight: 800;
@@ -244,7 +248,4 @@ button:hover {
 }
 .modal::backdrop {
   background: hsl(0 0% 0% / 70%);
-}
-.modal-close-btn:hover {
-  border: none;
 }
