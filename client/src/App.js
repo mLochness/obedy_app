@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import PrivateRoutes from './PrivateRoutes';
 import Navbar from './Navbar';
 import Home from './Home';
 import NotFound from './NotFound';
@@ -11,13 +12,13 @@ import UserDashboard from './user/UserDashboard';
 import AdminDashboard from './admin/AdminDashboard';
 import UsersList from './UsersList';
 import KidsList from './KidsList';
-import PrivateRoutes from './PrivateRoutes';
 import Modal from './Modal';
 
 const App = () => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [modalTxt, setModalTxt] = useState("");
+  const [nextSkipDate, setNextSkipDate] = useState(null);
   const modalMsg = message => {
     setModalTxt(message);
   }
@@ -28,15 +29,22 @@ const App = () => {
     setModalOpen(false);
     setModalTxt("-")
   };
-  // const handleModalButton = () => {
-  //   setModalTxt("Stlačili ste? Tu som.")
-  //   setModalOpen(true);
-  // }
 
+  const handleDateUpdate = (data) => {
+    data && setNextSkipDate(data);
+  };
+
+  useEffect(() => {
+    handleDateUpdate()
+    console.log("App - nextSkipDate:", nextSkipDate);
+  }, [])
+  
+  
   return (
     <div className="App">
       <Navbar />
-      <Countdown />
+      <Countdown dateUpdate={handleDateUpdate}/>
+      {/* <Countdown /> */}
       <div className="content">
         <Routes>
           {/* <Route exact path="/" element={userRole ? ( <UserDashboard /> ) : ( <Home /> )} /> */}
@@ -44,7 +52,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup modalMsg={modalMsg} signupOK={handleOpenModal} />} />
           <Route element={<PrivateRoutes modalMsg={modalMsg} idleLogout={handleOpenModal}/>}>
-            <Route element={<UserDashboard modalMsg={modalMsg} kidsAction={handleOpenModal}/>} path="/udashboard" />
+            <Route element={<UserDashboard modalMsg={modalMsg} kidsAction={handleOpenModal} skipDate={nextSkipDate} />} path="/udashboard" />
             <Route element={<AdminDashboard />} path="/adashboard" />
             <Route element={<AddKid modalMsg={modalMsg} addKidOK={handleOpenModal} />} path="/addkid" />
             <Route element={<KidsList />} path="/kids" />

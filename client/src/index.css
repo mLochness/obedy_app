@@ -60,9 +60,8 @@ h4 {
 
 .content {
   width: 90vw;
-  margin: 40px auto;
+  margin: 2em auto;
   padding: 20px;
-  max-width: 600px;
 }
 
 button {
@@ -73,6 +72,7 @@ button {
   border: 1px solid white;
   cursor: pointer;
   margin: 5px 0;
+  min-width: 8em;
 }
 
 .highLink {
@@ -206,13 +206,14 @@ button:hover {
   border-bottom: 1px solid #fff;
 }
 .itemLine > div {
-  display: flex;
-  align-items: center;
+  display: block;
 }
 .itemLineHead {
   font-weight: 800;
 }
-
+.secondaryLine {
+  font-size: 0.85em;
+}
 .errMessage {
   text-align: center;
   color: #fff;

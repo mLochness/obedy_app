@@ -40,8 +40,6 @@ export const AuthProvider = ({ children }) => {
         console.log("AuthLogout - userRole:", userRole)
       }
     } 
-  
-    
 
   }, [token]);
 

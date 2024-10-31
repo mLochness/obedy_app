@@ -148,19 +148,44 @@ app.get('/kids', (req, res) => {
     })
 })
 
-app.get('/userkids', (req, res) => {
+// app.get('/userkids', (req, res) => {
+//     const userID = req.query.user_id;
+//     const skipDate = req.skipDate;
+//     console.log("skipDate", req.skipDate);
+//     console.log("userID:", userID);
+//     const sql = "SELECT * FROM obedy_kids WHERE user_id=?";
+//     pool.query(sql, [userID],(err, data) => {
+//         if (err) return res.json(err);
+//         return res.json(data);
+//     })
+//     console.log("/userkids RUN");
+// })
+
+app.post('/userkids', (req, res) => {
     const userID = req.query.user_id;
-    console.log("req.query", req.query);
+    const nowSkip = req.body.nextSkipDate;
+    console.log("nowSkip:", nowSkip);
     console.log("userID:", userID);
-    const sql = "SELECT * FROM obedy_kids WHERE user_id=?";
-    //const sql = "SELECT kid_id, kid_name, kid_surname, kid_birth, user_id FROM obedy_kids";
-    //pool.query(sql, (err, data) => {
-    pool.query(sql, [userID],(err, data) => {
+    //const sql = "SELECT * FROM obedy_kids WHERE user_id=?";
+    const sql = "SELECT k.kid_id, k.kid_name, k.kid_surname, k.kid_birth, k.user_id, s.skip_id, s.skip_date FROM obedy_kids k LEFT JOIN obedy_skips s ON k.kid_id = s.kid_id AND s.skip_date = ? WHERE k.user_id = ?"; 
+    pool.query(sql, [nowSkip, userID],(err, data) => {
         if (err) return res.json(err);
         return res.json(data);
     })
-    console.log("/userkids RUN");
+    console.log("userkids END");
 })
+
+app.delete('/deleteskip', (req, res) => {
+    const skipID = req.body.skip_id;
+    console.log("skipID:", skipID);
+    const sql = "DELETE FROM obedy_skips WHERE skip_id = ?"; 
+    pool.query(sql, [skipID],(err) => {
+        if (err) return res.json(err);
+        res.status(200).json({ message: 'success' });
+    })
+    console.log("delete skip END");
+})
+
 
 app.listen(3001, () => {
     console.log('Server started on port 3001...')

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-const Countdown = () => {
+
+const Countdown = ({ skipDate, dateUpdate }) => {
 
   const [count, setCount] = useState(0);
-
+  const [timeUpdate, setTimeUpdate] = useState(false);
+    
   var today = new Date();
   let nextDay = new Date();
   nextDay.setDate(today.getDate() + 1);
@@ -11,22 +13,22 @@ const Countdown = () => {
   var dayOfWeek = today.getDay();
   const dayNames = ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"];
   var showDayName = dayNames[dayOfWeek];
-  let todayLimit = today.setHours(7, 30, 0);
+  // let todayLimit = today.setHours(7, 30, 0);
+  // let nextLimit = nextDay.setHours(7, 30, 0);
+  let todayLimit = today.setHours(21, 37, 30);
   let nextLimit = nextDay.setHours(7, 30, 0);
   var countDownDate = nextLimit;
   
 
   if (dayOfWeek === 6) {
     nextLimit = nextDay.setDate(today.getDate() + 2);
-    //today.setDate(today.getDate() + 2);
     showDayName = dayNames[1];
-    countDownDate = nextLimit
+    countDownDate = nextLimit;
   }
   else if (dayOfWeek === 0) {
     nextLimit = nextDay.setDate(today.getDate() + 1);
-    //today.setDate(today.getDate() + 1);
     showDayName = dayNames[1];
-    countDownDate = nextLimit
+    countDownDate = nextLimit;
   }
   else if (dayOfWeek === 5 && now > todayLimit) {
     nextDay.setDate(today.getDate() + 3);
@@ -43,12 +45,9 @@ const Countdown = () => {
     countDownDate = nextLimit;
   }
   
-  //console.log(now < todayLimit && (dayOfWeek !== 0 || 5 || 6));
-  //nextLimit = nextDay.setHours(7, 30, 0);
-  //countDownDate = nextLimit;
-  
+ 
   var cDate = new Date(countDownDate);
-  var dateOutput = (cDate.getDate() + " / " + (cDate.getMonth() + 1) + " / " + cDate.getFullYear());
+  var dateOutput = (cDate.getDate() + "-" + (cDate.getMonth() + 1) + "-" + cDate.getFullYear());
 
   var distance = countDownDate - now;
   var days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -59,18 +58,35 @@ const Countdown = () => {
   var secDisplay = seconds.toString().length === 1 ? "0" + seconds : seconds;
   var timeLeft = days + "d " + hours + "h " + minDisplay + "m " + secDisplay + "s ";
 
-  //console.log(nextLimit);
-
+  var dateWatch = (cDate.getFullYear() + "-" + (cDate.getMonth() + 1) + "-" + cDate.getDate());
   useEffect(() => {
-
     //Implementing the setInterval method 
     const interval = setInterval(() => {
       setCount(count + 1);
-    }, 1000);
 
+      if (dateWatch !== nextSkipDate) {
+        console.log("New time limit begun...");
+        setTimeUpdate(!timeUpdate);
+      }
+
+    }, 1000);
     //Clearing the interval 
     return () => clearInterval(interval);
   }, [count]);
+
+  const [nextSkipDate, setNextSkipDate] = useState(dateWatch);
+
+
+
+  useEffect(() => {
+    setNextSkipDate(dateWatch);
+    console.log("Countdown - setting nextSkipDate:", nextSkipDate);
+    skipDate = nextSkipDate;
+    dateUpdate(skipDate);
+    console.log("timeUpdate value:", timeUpdate);
+    console.log("skipDate:", skipDate);
+  }, [timeUpdate])
+
 
   return (
     <div className='countDown'>
