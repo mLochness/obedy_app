@@ -72,6 +72,8 @@ button {
   border: 1px solid white;
   cursor: pointer;
   margin: 5px 0;
+}
+.itemLine > div > button {
   min-width: 8em;
 }
 

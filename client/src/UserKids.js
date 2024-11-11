@@ -1,9 +1,11 @@
 import { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from './auth/AuthContext';
-import DatePicker from "react-datepicker";
-import { forwardRef } from "react";
 
+import DatePicker, { registerLocale } from "react-datepicker";
+import sk from "date-fns/locale/sk";
+import { forwardRef } from "react";
+import { addDays } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 
 const UserKids = ({ actionMessage, skipDate }) => {
@@ -15,8 +17,31 @@ const UserKids = ({ actionMessage, skipDate }) => {
   const [kidID, setKidId] = useState(null);
   const [isPending, setIsPending] = useState(true);
   
+
   //datepicker:
-  const [startDate, setStartDate] = useState(new Date());
+  registerLocale("sk", sk);
+  const [selectedDates, setSelectedDates] = useState([]);
+  //let datesArr = [];
+  const [datesArr, setDatesArr] = useState([]);
+  //const [listDates, setListDates] = useState(datesArr.map(selDate => { return {selDate}}));
+  //var listDates;
+  const onChange = (dates) => {
+    setSelectedDates(dates);
+    
+    setDatesArr(dates.map((el) => {
+      var d = new Date(el);
+      return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    }));
+    console.log("selected dates (datesArr):", datesArr);
+    console.log("list dates:", listDates);
+    
+  };
+  const listDates = datesArr.map(selDate => { return <li>{selDate}</li>});
+  const isWeekday = (date) => {
+    const day = date.getDay();
+    return day !== 0 && day !== 6;
+  };
+
   const ChooseDateButton = forwardRef(
     ({ value, onClick, className }, ref) => (
       <button className={className} onClick={onClick} ref={ref}>
@@ -25,29 +50,17 @@ const UserKids = ({ actionMessage, skipDate }) => {
     ),
   );
 
-  //const [nextSkipDate, setNextSkipDate] = useState(skipDate);
   let nextSkipDate = skipDate;
   console.log("userKids - nextSkipDate:", skipDate);
 
-
-  //const skip = { kidID, nextSkipDate };
   const skip = { kidID, skipDate };
-  //console.log("userKids - skip:", skip);
-
 
   const fetchUserKids = () => {
-    //let currentTime = new Date();
-    //const nowSkip = "'" + currentTime.getFullYear() + "-" + (currentTime.getMonth() + 1) + "-" + currentTime.getDate() + "'";
-    //const nowSkip = currentTime.getFullYear() + "-" + (currentTime.getMonth() + 1) + "-" + currentTime.getDate();
-    //const checkSkip = { nowSkip, userID };
     const checkSkip = { nextSkipDate, userID };
     console.log("fetchUserKids skipDate:", nextSkipDate)
     setIsPending(true);
     console.log("fetchUserKids userID:", userID);
-    //console.log("fetchUserKids skipDate (local):", nowSkip);
 
-    // return fetch(`http://localhost:3001/userkids?user_id=${userID}`)
-    //return fetch("http://localhost:3001/userkids?user_id=" + userID, {
     fetch("http://localhost:3001/userkids?user_id=" + userID, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
@@ -55,7 +68,6 @@ const UserKids = ({ actionMessage, skipDate }) => {
     })
       .then((res) => res.json())
       .then((d) => { setData(d) })
-      //.then(() => localStorage.setItem("userChildData", JSON.stringify(data)))
       .then(() => { setIsPending(false); })
       .then(() => console.log("fetched UserKids data:", data))
       .catch((err) => {
@@ -73,9 +85,6 @@ const UserKids = ({ actionMessage, skipDate }) => {
 
   const handleKidSignout = (kid_id) => {
     setErrors([]);
-    //currentTime = new Date();
-    //current date - testing purpose !!!:
-    //setNextSkipDate(currentTime.getFullYear() + "-" + (currentTime.getMonth() + 1) + "-" + currentTime.getDate());
     setKidId(kid_id);
     setIsPending(true);
     console.log("handleKidSignout END");
@@ -83,7 +92,6 @@ const UserKids = ({ actionMessage, skipDate }) => {
 
   const kidSkip = () => {
     console.log("skip RUN");
-    //const skip = { kidID, skipDate };
     console.log("skip data:", skip);
     fetch('http://localhost:3001/addskip', {
       method: 'POST',
@@ -157,12 +165,11 @@ const UserKids = ({ actionMessage, skipDate }) => {
 
   return (
     <div>
-      <p>*****UserKids test date: {skipDate}</p>
       <h2>Moje deti</h2>
       <div className='itemLine itemLineHead'>
         <div><div>Meno</div>
           <div className="secondaryLine">Dátum nar.</div></div>
-        <div>Skip status..</div>
+        <div>Najbližší dátum</div>
         <div>Iný dátum</div>
       </div>
       <div>
@@ -171,11 +178,26 @@ const UserKids = ({ actionMessage, skipDate }) => {
             <div className='itemLine' key={dataObj.kid_id}>
               <div><div>{dataObj.kid_name} {dataObj.kid_surname}</div>
                 <div className="secondaryLine">{dataObj.kid_birth.slice(0, 10)}</div></div>
-              <div>{dataObj.skip_date ? 
-                <button className="revertBtn" onClick={(() => handleSkipDelete(dataObj.skip_id))}>ZRUŠIŤ</button> 
-                : 
+              <div>{dataObj.skip_date ?
+                <button className="revertBtn" onClick={(() => handleSkipDelete(dataObj.skip_id))}>ZRUŠIŤ</button>
+                :
                 <button onClick={(() => handleKidSignout(dataObj.kid_id))}>ODHLÁSIŤ</button>}</div>
-              <div><DatePicker selected={startDate} onChange={(date) => setStartDate(date)} customInput={<ChooseDateButton className="chooseDateButton" />} /></div>
+              <div>
+                <DatePicker
+                locale="sk"
+                  selectedDates={selectedDates}
+                  selectsMultiple
+                  onChange={onChange}
+                  shouldCloseOnSelect={false}
+                  disabledKeyboardNavigation
+                  calendarStartDay={1}
+                  filterDate={isWeekday}
+                  minDate={new Date()}
+                  maxDate={addDays(new Date(), 13)}
+                  dateFormat="yyyy-MM-dd"
+                  customInput={<ChooseDateButton className="chooseDateButton" />}
+                />
+              </div>
             </div>
           )
         })}
@@ -183,6 +205,8 @@ const UserKids = ({ actionMessage, skipDate }) => {
       <br>
       </br>
       <p className='errMessage'>{errors}</p>
+
+      <div>Vybraný rozsah: <ul>{listDates}</ul> </div>
 
     </div>
   )

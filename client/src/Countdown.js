@@ -13,9 +13,7 @@ const Countdown = ({ skipDate, dateUpdate }) => {
   var dayOfWeek = today.getDay();
   const dayNames = ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"];
   var showDayName = dayNames[dayOfWeek];
-  // let todayLimit = today.setHours(7, 30, 0);
-  // let nextLimit = nextDay.setHours(7, 30, 0);
-  let todayLimit = today.setHours(21, 37, 30);
+  let todayLimit = today.setHours(7, 30, 0);
   let nextLimit = nextDay.setHours(7, 30, 0);
   var countDownDate = nextLimit;
   
