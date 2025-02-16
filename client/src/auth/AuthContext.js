@@ -5,7 +5,8 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   //const [isToken, setIsToken] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("loginStorage") || "");
+  // const [token, setToken] = useState(localStorage.getItem("loginStorage") || "");
+  const [token, setToken] = useState(sessionStorage.getItem("loginStorage") || "");
   const [isPending, setIsPending] = useState(true); 
   const [userRole, setUserRole] = useState(null);
   const [userID, setUserID] = useState(null);
@@ -13,7 +14,8 @@ export const AuthProvider = ({ children }) => {
   
  
   useEffect(() => {
-    const loginObj = localStorage.getItem("loginStorage");
+    // const loginObj = localStorage.getItem("loginStorage");
+    const loginObj = sessionStorage.getItem("loginStorage");
 
     if (loginObj) {
       const loginObjParsed = JSON.parse(loginObj);

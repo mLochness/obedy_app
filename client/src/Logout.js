@@ -8,7 +8,8 @@ const Logout = () => {
 
     const handleLogout = (e) => {
         e.preventDefault();
-        localStorage.removeItem("loginStorage");
+        // localStorage.removeItem("loginStorage");
+        sessionStorage.removeItem("loginStorage");
         setToken(null);
         setUserRole(null);
         redirect('/', {replace:true});

@@ -1,10 +1,10 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from './auth/AuthContext';
 
 import DatePicker, { registerLocale } from "react-datepicker";
 import sk from "date-fns/locale/sk";
-import { forwardRef } from "react";
+//import { forwardRef } from "react";
 import { addDays } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -16,42 +16,38 @@ const UserKids = ({ actionMessage, skipDate }) => {
   const [errors, setErrors] = useState([]);
   const [kidID, setKidId] = useState(null);
   const [isPending, setIsPending] = useState(true);
-  
+  const [kidName, setKidName] = useState(null);
+  const [modalKidId, setModalKidId] = useState(null);
 
   //datepicker:
   registerLocale("sk", sk);
   const [selectedDates, setSelectedDates] = useState([]);
-  //let datesArr = [];
   const [datesArr, setDatesArr] = useState([]);
-  //const [listDates, setListDates] = useState(datesArr.map(selDate => { return {selDate}}));
-  //var listDates;
-  const onChange = (dates) => {
+  const onDatepickerChange = (dates) => {
     setSelectedDates(dates);
-    
     setDatesArr(dates.map((el) => {
       var d = new Date(el);
-      return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
     }));
-    console.log("selected dates (datesArr):", datesArr);
-    console.log("list dates:", listDates);
-    
+
   };
-  const listDates = datesArr.map(selDate => { return <li>{selDate}</li>});
+  const listDates = datesArr.map(selDate => { return <li key={selDate} id={selDate}>{selDate}</li> });
   const isWeekday = (date) => {
     const day = date.getDay();
     return day !== 0 && day !== 6;
   };
 
-  const ChooseDateButton = forwardRef(
-    ({ value, onClick, className }, ref) => (
-      <button className={className} onClick={onClick} ref={ref}>
-        Vyberte dátum
-      </button>
-    ),
-  );
+  //datepicker custom trigger - button:
+  // const ChooseDateButton = forwardRef(
+  //   ({ value, onClick, className, key }, ref) => (
+  //     <button className={className} onClick={onClick} ref={ref} key={key}>
+  //       Vyberte dátum
+  //     </button>
+  //   ),
+  // );
 
   let nextSkipDate = skipDate;
-  console.log("userKids - nextSkipDate:", skipDate);
+  //console.log("userKids - nextSkipDate:", skipDate);
 
   const skip = { kidID, skipDate };
 
@@ -60,6 +56,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
     console.log("fetchUserKids skipDate:", nextSkipDate)
     setIsPending(true);
     console.log("fetchUserKids userID:", userID);
+    setDatesArr([]);
 
     fetch("http://localhost:3001/userkids?user_id=" + userID, {
       method: 'POST',
@@ -74,13 +71,13 @@ const UserKids = ({ actionMessage, skipDate }) => {
         setErrors([err.message]);
         console.log("errors:", errors);
       });
+
   }
 
   useEffect(() => {
     userID && fetchUserKids();
     console.log("userKids useEffect RUN, userID:", userID);
   }, [userID]);
-
 
 
   const handleKidSignout = (kid_id) => {
@@ -104,11 +101,9 @@ const UserKids = ({ actionMessage, skipDate }) => {
           setIsPending(false);
           actionMessage("Dieťa bolo odhlásené");
           setKidId(null);
-          //setNextSkipDate(null);
           fetchUserKids();
         } else {
           setIsPending(false);
-          //setErrors("Nastala chyba, skúste to neskôr");
           setErrors([data.message]);
         }
       })
@@ -157,6 +152,59 @@ const UserKids = ({ actionMessage, skipDate }) => {
     console.log("handleSkipDelete END");
   }
 
+  const dateModal = useRef(null);
+  // window.onclick = function (event) {
+  //   if (event.target === dateModal) {
+  //     dateModal.current.style.display = "none";
+  //   }
+  // }
+  const dateRange = (kid_id, kid_name, kid_surname) => {
+    //dateModal.current.style.display = "block";
+    dateModal.current.style.transform = 'scale(1)';
+    setKidName(kid_name + " " + kid_surname);
+    setModalKidId(kid_id);  
+    //handleMultiSkip();
+  }
+  const handleModalEscape = (event) => {
+    if (event.key === 'Escape') {
+      //dateModal.current.style.display = "none";
+      dateModal.current.style.transform = 'scale(0)';
+    }
+  };
+
+  const multiskip = { modalKidId, datesArr };
+
+  const handleMultiSkip = () => {
+    console.log("multiskip:", multiskip);
+    console.log("datesArr:", datesArr);
+    fetch('http://localhost:3001/multiskip', {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(multiskip)
+    }).then((res) => res.json())
+      .then((data) => {
+        if (data.message === "success") {
+          console.log("multiskip added");
+          setIsPending(false);
+          actionMessage("Dieťa bolo odhlásené na zvolené termíny");
+          setKidId(null);
+          setDatesArr(null);
+          //setNextSkipDate(null);
+          fetchUserKids();
+        } else {
+          setIsPending(false);
+          //setErrors("Nastala chyba, skúste to neskôr");
+          setErrors([data.message]);
+        }
+      })
+      .catch((err) => {
+        setErrors([err.message]);
+        setIsPending(false);
+        console.log("errors:", err);
+      })
+
+  }
+
 
   if (isPending) {
     return (<div>Loading... </div>
@@ -164,7 +212,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
   }
 
   return (
-    <div>
+    <div onKeyDown={handleModalEscape}>
       <h2>Moje deti</h2>
       <div className='itemLine itemLineHead'>
         <div><div>Meno</div>
@@ -173,30 +221,18 @@ const UserKids = ({ actionMessage, skipDate }) => {
         <div>Iný dátum</div>
       </div>
       <div>
-        {data.length === 0 ? <Link to="/addkid">Zaregistrujte dieťa</Link> : data.map((dataObj) => {
+        {data.length === 0 ? <Link to="/addkid"><button>Zaregistrujte dieťa</button></Link> : data.map((dataObj) => {
           return (
-            <div className='itemLine' key={dataObj.kid_id}>
+            <div className='itemLine' key={dataObj.kid_id} >
+
               <div><div>{dataObj.kid_name} {dataObj.kid_surname}</div>
                 <div className="secondaryLine">{dataObj.kid_birth.slice(0, 10)}</div></div>
               <div>{dataObj.skip_date ?
-                <button className="revertBtn" onClick={(() => handleSkipDelete(dataObj.skip_id))}>ZRUŠIŤ</button>
+                <button className="revertBtn" onClick={() => handleSkipDelete(dataObj.skip_id)}>ZRUŠIŤ</button>
                 :
                 <button onClick={(() => handleKidSignout(dataObj.kid_id))}>ODHLÁSIŤ</button>}</div>
               <div>
-                <DatePicker
-                locale="sk"
-                  selectedDates={selectedDates}
-                  selectsMultiple
-                  onChange={onChange}
-                  shouldCloseOnSelect={false}
-                  disabledKeyboardNavigation
-                  calendarStartDay={1}
-                  filterDate={isWeekday}
-                  minDate={new Date()}
-                  maxDate={addDays(new Date(), 13)}
-                  dateFormat="yyyy-MM-dd"
-                  customInput={<ChooseDateButton className="chooseDateButton" />}
-                />
+              <button onClick={() => dateRange(dataObj.kid_id, dataObj.kid_name, dataObj.kid_surname)}>VYBERTE DÁTUM</button>
               </div>
             </div>
           )
@@ -206,7 +242,33 @@ const UserKids = ({ actionMessage, skipDate }) => {
       </br>
       <p className='errMessage'>{errors}</p>
 
-      <div>Vybraný rozsah: <ul>{listDates}</ul> </div>
+      <dialog id="dateModal" className="dateModal" ref={dateModal} >
+        <div className="modal-content">
+          <span className="dateModalClose" onClick={() => dateModal.current.style.transform = 'scale(0)'}>&times;</span>
+          <h3>{kidName}</h3>
+          kid ID: {modalKidId} 
+          <DatePicker
+            locale="sk"
+            selectedDates={selectedDates}
+            selectsMultiple
+            //onChange={onChange}
+            onChange={onDatepickerChange}
+            shouldCloseOnSelect={false}
+            disabledKeyboardNavigation
+            calendarStartDay={1}
+            filterDate={isWeekday}
+            minDate={new Date()}
+            maxDate={addDays(new Date(), 13)}
+            dateFormat="yyyy-MM-dd"
+            inline
+          // customInput={<ChooseDateButton className="chooseDateButton" />}
+
+          />
+
+          {listDates}
+          {listDates.length === 0 ? "" : <button onClick={handleMultiSkip}>ODHLÁSIŤ TERMÍNY</button>}
+        </div>
+      </dialog>
 
     </div>
   )

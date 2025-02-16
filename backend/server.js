@@ -49,27 +49,27 @@ app.post('/login', (req, res) => {
                     console.log("comparation result:", response);
                     console.log("user role:", result[0].user_role);
                     if (response) {
-                // ***************************************************
-                const user = { name: username };
-                const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-                res.status(200).json({ 
-                    accessToken: accessToken, 
-                    "user_role" : result[0].user_role, 
-                    "user_id" : result[0].user_id,
-                    "user_name": username,
-                    "message": "success"
-                });
-                //***************************************************
-                return;
+                        // ***************************************************
+                        const user = { name: username };
+                        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
+                        res.status(200).json({
+                            accessToken: accessToken,
+                            "user_role": result[0].user_role,
+                            "user_id": result[0].user_id,
+                            "user_name": username,
+                            "message": "success"
+                        });
+                        //***************************************************
+                        return;
                     } else {
                         // return res.send({ message: "Wrong passsword!" });
-                         return res.status(400).json({ message: 'Wrong username or password' });
+                        return res.status(400).json({ message: 'Wrong username or password' });
                     }
                 });
                 return;
             } else {
                 console.log("Wrong username/password combination!");
-            return res.status(400).json({message: 'Wrong username/password combination!' });
+                return res.status(400).json({ message: 'Wrong username/password combination!' });
             }
         }
     });
@@ -88,8 +88,8 @@ app.post("/signup", (req, res) => {
         pool.query(q, values, (err, data) => {
             console.log(err, data);
             //if (err) return res.status(400).json({ error: err.sqlMessage });
-            if (err) return res.status(400).json({message: err.sqlMessage });
-            
+            if (err) return res.status(400).json({ message: err.sqlMessage });
+
             //else return res.json({ data });
             //else return res.status(200).json(req.body);
             else return res.status(200).json({ message: 'success' });
@@ -108,7 +108,7 @@ app.post("/addkid", (req, res) => {
     console.log("values: ", values);
     pool.query(q, [values], (err, data) => {
         console.log(err, data);
-        if (err) return res.json({err});
+        if (err) return res.json({ err });
         //else return res.json({ data });
         else return res.json(req.body);
     });
@@ -122,13 +122,44 @@ app.post("/addskip", (req, res) => {
     console.log("values: ", values);
     pool.query(q, [values], (err, data) => {
         console.log(err, data);
-        if (err) return res.status(400).json({message: "Nastala chyba, server message" });
-        //if (err) return res.status(400).json({err});
-        //else return res.json({ data });
-        //else return res.json(req.body);
+        if (err) return res.status(400).json({ message: "Nastala chyba, server side" });
         else return res.status(200).json({ message: 'success' });
     });
 });
+
+
+/* ************************************************************* */
+app.post("/multiskip", (req, res) => {
+
+    const q = "INSERT INTO obedy_skips (kid_id, skip_date) VALUES ?";
+    const kidID = req.body.modalKidId;
+    const skipDates = req.body.datesArr;
+    console.log("skipDates: ", skipDates);
+
+    var values = [];
+    skipDates.forEach(function(entry) {
+    console.log("entry:", entry);
+    values.push([kidID, entry]);
+});
+
+
+    // const values = skipDates.map(formatArr);
+
+    // function formatArr(num) {
+    //     return ('(' + kidID + ', "' + num + '")');
+    // }
+
+    console.log("kidID: ", kidID);
+    console.log("values: ", values);
+
+    pool.query(q, [values], (err, data) => {
+        console.log(err, data);
+        if (err) return res.status(400).json({ message: "Nastala chyba na strane servera" });
+        else return res.status(200).json({ message: 'success' });
+    });
+});
+/* ************************************************************* */
+
 
 app.get('/users', (req, res) => {
     const sql = "SELECT * FROM obedy_users";
@@ -140,8 +171,8 @@ app.get('/users', (req, res) => {
 
 app.get('/kids', (req, res) => {
     //const sql = "SELECT kid_id, kid_name, kid_surname, kid_birth FROM obedy_kids";
-    //const sql = "SELECT kid_id, kid_name, kid_surname, DATE_FORMAT(kid_birth, '%d/%m/%Y') FROM obedy_kids";
-    const sql = "SELECT * FROM obedy_kids";
+    const sql = "SELECT kid_id, kid_name, kid_surname, DATE_FORMAT(kid_birth, '%d/%m/%Y') FROM obedy_kids";
+    ///const sql = "SELECT * FROM obedy_kids";
     pool.query(sql, (err, data) => {
         if (err) return res.json(err);
         return res.json(data);
@@ -167,8 +198,8 @@ app.post('/userkids', (req, res) => {
     console.log("nowSkip:", nowSkip);
     console.log("userID:", userID);
     //const sql = "SELECT * FROM obedy_kids WHERE user_id=?";
-    const sql = "SELECT k.kid_id, k.kid_name, k.kid_surname, k.kid_birth, k.user_id, s.skip_id, s.skip_date FROM obedy_kids k LEFT JOIN obedy_skips s ON k.kid_id = s.kid_id AND s.skip_date = ? WHERE k.user_id = ?"; 
-    pool.query(sql, [nowSkip, userID],(err, data) => {
+    const sql = "SELECT k.kid_id, k.kid_name, k.kid_surname, k.kid_birth, k.user_id, s.skip_id, s.skip_date FROM obedy_kids k LEFT JOIN obedy_skips s ON k.kid_id = s.kid_id AND s.skip_date = ? WHERE k.user_id = ? ORDER BY kid_id";
+    pool.query(sql, [nowSkip, userID], (err, data) => {
         if (err) return res.json(err);
         return res.json(data);
     })
@@ -178,8 +209,8 @@ app.post('/userkids', (req, res) => {
 app.delete('/deleteskip', (req, res) => {
     const skipID = req.body.skip_id;
     console.log("skipID:", skipID);
-    const sql = "DELETE FROM obedy_skips WHERE skip_id = ?"; 
-    pool.query(sql, [skipID],(err) => {
+    const sql = "DELETE FROM obedy_skips WHERE skip_id = ?";
+    pool.query(sql, [skipID], (err) => {
         if (err) return res.json(err);
         res.status(200).json({ message: 'success' });
     })

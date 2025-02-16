@@ -48,12 +48,14 @@ const Login = () => {
             userRole: data.user_role,
           }
           console.log("to storage:", data.accessToken, data.user_id, data.user_name, data.user_role);
-          localStorage.setItem("loginStorage", JSON.stringify(loginStorageObj));
+          // localStorage.setItem("loginStorage", JSON.stringify(loginStorageObj));
+          sessionStorage.setItem("loginStorage", JSON.stringify(loginStorageObj));
           setToken(data.accessToken);
           setIsPending(false);
         } else {
           setIsPending(false);
-          localStorage.removeItem("loginStorage");
+          // localStorage.removeItem("loginStorage");
+          sessionStorage.removeItem("loginStorage");
           setErrors([data.message]);
         }
       })

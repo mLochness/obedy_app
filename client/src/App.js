@@ -39,7 +39,7 @@ const App = () => {
     console.log("App - nextSkipDate:", nextSkipDate);
   }, [])
   
-  
+
   return (
     <div className="App">
       <Navbar />
