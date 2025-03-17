@@ -4,20 +4,21 @@ import { AuthContext } from './auth/AuthContext';
 
 import DatePicker, { registerLocale } from "react-datepicker";
 import sk from "date-fns/locale/sk";
-//import { forwardRef } from "react";
 import { addDays } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 
 const UserKids = ({ actionMessage, skipDate }) => {
 
-  //const dataFetched = localStorage.getItem("userChildData");
   const { userID } = useContext(AuthContext);
   const [data, setData] = useState();
+  const [kidsList, setKidsList] = useState([]);
   const [errors, setErrors] = useState([]);
   const [kidID, setKidId] = useState(null);
   const [isPending, setIsPending] = useState(true);
   const [kidName, setKidName] = useState(null);
   const [modalKidId, setModalKidId] = useState(null);
+  const [kidSkipList, setKidSkipList] = useState([]);
+
 
   //datepicker:
   registerLocale("sk", sk);
@@ -52,6 +53,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
   const skip = { kidID, skipDate };
 
   const fetchUserKids = () => {
+    setErrors([]);
     const checkSkip = { nextSkipDate, userID };
     console.log("fetchUserKids skipDate:", nextSkipDate)
     setIsPending(true);
@@ -66,18 +68,26 @@ const UserKids = ({ actionMessage, skipDate }) => {
       .then((res) => res.json())
       .then((d) => { setData(d) })
       .then(() => { setIsPending(false); })
-      .then(() => console.log("fetched UserKids data:", data))
+      .then(() => {
+        console.log("fetched UserKids data not set yet? :", data);
+      })
       .catch((err) => {
         setErrors([err.message]);
-        console.log("errors:", errors);
+        console.log("errors:", err);
       });
 
   }
 
   useEffect(() => {
     userID && fetchUserKids();
-    console.log("userKids useEffect RUN, userID:", userID);
   }, [userID]);
+
+  useEffect(() => {
+    console.log("data useEffect RUN, data:", data);
+    if (data) {
+      setKidsList([...new Map(data.map(item => [item.kid_id, item])).values()]);
+    }
+  }, [data]);
 
 
   const handleKidSignout = (kid_id) => {
@@ -162,13 +172,15 @@ const UserKids = ({ actionMessage, skipDate }) => {
     //dateModal.current.style.display = "block";
     dateModal.current.style.transform = 'scale(1)';
     setKidName(kid_name + " " + kid_surname);
-    setModalKidId(kid_id);  
+    setModalKidId(kid_id);
     //handleMultiSkip();
+  }
+  const handleDateModalClose = () => {
+    dateModal.current.style.transform = 'scale(0)'
   }
   const handleModalEscape = (event) => {
     if (event.key === 'Escape') {
-      //dateModal.current.style.display = "none";
-      dateModal.current.style.transform = 'scale(0)';
+      handleDateModalClose();
     }
   };
 
@@ -205,6 +217,51 @@ const UserKids = ({ actionMessage, skipDate }) => {
 
   }
 
+  const handleInfoButton = (kid_id) => {
+    setErrors([]);
+    setIsPending(true);
+    setKidSkipList([]);
+    console.log("infoButton kid_id", kid_id);
+    const kidID = { kid_id };
+
+    fetch("http://localhost:3001/kidskiplist", {
+      method: 'POST',
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(kidID)
+    }).then((res) => res.json())
+      .then((d) => {
+        setKidSkipList(d);
+        setIsPending(false);
+      })
+      .catch((err) => {
+        setErrors([err.message]);
+        setIsPending(false);
+        console.log("errors:", err);
+      })
+
+    console.log("handleInfoButton END");
+
+  }
+
+  useEffect(() => {
+    console.log("skiplist useEffect RUN, data:", kidSkipList);
+    if (kidSkipList.length > 0) {
+      actionMessage(
+        <div>
+           <h4><strong>{kidName} </strong><br></br>všetky odhlásené termíny:</h4>
+          {}
+          {kidSkipList.length === 0 ? "No data" : kidSkipList.map((skipObj) => {
+            return (
+              <div className='skipLine' key={skipObj.skip_id}>
+                <div>{skipObj.skip_date} </div>
+              </div>
+            )
+          })}
+        </div>
+      )
+    }
+  }, [kidSkipList]);
+
 
   if (isPending) {
     return (<div>Loading... </div>
@@ -217,23 +274,38 @@ const UserKids = ({ actionMessage, skipDate }) => {
       <div className='itemLine itemLineHead'>
         <div><div>Meno</div>
           <div className="secondaryLine">Dátum nar.</div></div>
-        <div>Najbližší dátum</div>
-        <div>Iný dátum</div>
+        <div>Odhlásenie</div>
+        <div>Odhlásené termíny</div>
+        <div>História</div>
       </div>
       <div>
-        {data.length === 0 ? <Link to="/addkid"><button>Zaregistrujte dieťa</button></Link> : data.map((dataObj) => {
+        {kidsList.length === 0 ? <Link to="/addkid"><button>Zaregistrujte dieťa</button></Link> : kidsList.map((dataObj) => {
           return (
-            <div className='itemLine' key={dataObj.kid_id} >
+            <div className='itemLine' key={dataObj.kid_id}>
 
-              <div><div>{dataObj.kid_name} {dataObj.kid_surname}</div>
-                <div className="secondaryLine">{dataObj.kid_birth.slice(0, 10)}</div></div>
-              <div>{dataObj.skip_date ?
-                <button className="revertBtn" onClick={() => handleSkipDelete(dataObj.skip_id)}>ZRUŠIŤ</button>
-                :
-                <button onClick={(() => handleKidSignout(dataObj.kid_id))}>ODHLÁSIŤ</button>}</div>
               <div>
-              <button onClick={() => dateRange(dataObj.kid_id, dataObj.kid_name, dataObj.kid_surname)}>VYBERTE DÁTUM</button>
+                <div>{dataObj.kid_name} {dataObj.kid_surname}</div>
+                <div className="secondaryLine">{dataObj.kid_birth.slice(0, 10)}</div>
               </div>
+              <div>
+                <button onClick={() => dateRange(dataObj.kid_id, dataObj.kid_name, dataObj.kid_surname)}>VYBERTE DÁTUM</button>
+              </div>
+              <div>{
+                data.map((skipObj) => {
+                  return (
+                    <div className="dateRegistered" key={skipObj.kid_id + "-" + skipObj.skip_id}>{dataObj.kid_id === skipObj.kid_id && skipObj.skip_date ?
+                      <div>{skipObj.skip_date} &nbsp; <button className="revertBtn" onClick={() => handleSkipDelete(skipObj.skip_id)}>✕</button></div>
+                      :
+                      ""
+                    }</div>
+                  )
+                })
+              }
+              </div>
+              <div>
+                <button className="infoBtn" onClick={() => handleInfoButton(dataObj.kid_id)}>História</button>
+              </div>
+
             </div>
           )
         })}
@@ -242,11 +314,22 @@ const UserKids = ({ actionMessage, skipDate }) => {
       </br>
       <p className='errMessage'>{errors}</p>
 
-      <dialog id="dateModal" className="dateModal" ref={dateModal} >
-        <div className="modal-content">
-          <span className="dateModalClose" onClick={() => dateModal.current.style.transform = 'scale(0)'}>&times;</span>
+      {/* <div>
+        <h3>SkipList output:</h3>
+        {kidSkipList && kidSkipList.map((skipObj) => {
+          return (
+            <div className='skipLine' key={skipObj.skip_id}>
+              <div>{skipObj.skip_date} </div>
+            </div>
+          )
+        })}
+      </div> */}
+
+      <dialog id="dateModal" className="dateModal" ref={dateModal} onClick={handleDateModalClose}>
+        <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <span className="dateModalClose" onClick={handleDateModalClose}>&times;</span>
           <h3>{kidName}</h3>
-          kid ID: {modalKidId} 
+          kid ID: {modalKidId}
           <DatePicker
             locale="sk"
             selectedDates={selectedDates}

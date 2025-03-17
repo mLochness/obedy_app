@@ -137,14 +137,12 @@ app.post("/multiskip", (req, res) => {
     console.log("skipDates: ", skipDates);
 
     var values = [];
-    skipDates.forEach(function(entry) {
-    console.log("entry:", entry);
-    values.push([kidID, entry]);
-});
-
+    skipDates.forEach(function (entry) {
+        console.log("entry:", entry);
+        values.push([kidID, entry]);
+    });
 
     // const values = skipDates.map(formatArr);
-
     // function formatArr(num) {
     //     return ('(' + kidID + ', "' + num + '")');
     // }
@@ -154,6 +152,7 @@ app.post("/multiskip", (req, res) => {
 
     pool.query(q, [values], (err, data) => {
         console.log(err, data);
+        if(err.errno === 1062) return res.status(400).json({ message: "Dátum už bol zadaný" });
         if (err) return res.status(400).json({ message: "Nastala chyba na strane servera" });
         else return res.status(200).json({ message: 'success' });
     });
@@ -179,28 +178,19 @@ app.get('/kids', (req, res) => {
     })
 })
 
-// app.get('/userkids', (req, res) => {
-//     const userID = req.query.user_id;
-//     const skipDate = req.skipDate;
-//     console.log("skipDate", req.skipDate);
-//     console.log("userID:", userID);
-//     const sql = "SELECT * FROM obedy_kids WHERE user_id=?";
-//     pool.query(sql, [userID],(err, data) => {
-//         if (err) return res.json(err);
-//         return res.json(data);
-//     })
-//     console.log("/userkids RUN");
-// })
 
 app.post('/userkids', (req, res) => {
     const userID = req.query.user_id;
     const nowSkip = req.body.nextSkipDate;
     console.log("nowSkip:", nowSkip);
     console.log("userID:", userID);
-    //const sql = "SELECT * FROM obedy_kids WHERE user_id=?";
-    const sql = "SELECT k.kid_id, k.kid_name, k.kid_surname, k.kid_birth, k.user_id, s.skip_id, s.skip_date FROM obedy_kids k LEFT JOIN obedy_skips s ON k.kid_id = s.kid_id AND s.skip_date = ? WHERE k.user_id = ? ORDER BY kid_id";
+    //const sql = "SELECT k.kid_id, k.kid_name, k.kid_surname, k.kid_birth, k.user_id, s.skip_id, s.skip_date FROM obedy_kids k LEFT JOIN obedy_skips s ON k.kid_id = s.kid_id AND s.skip_date = ? WHERE k.user_id = ? ORDER BY kid_id";
+    // const sql = "SELECT k.kid_id, k.kid_name, k.kid_surname, k.kid_birth, k.user_id, s.skip_id, s.skip_date FROM obedy_kids k LEFT JOIN obedy_skips s ON k.kid_id = s.kid_id AND s.skip_date > ? WHERE k.user_id = ? ORDER BY kid_id";
+    const sql = "SELECT k.kid_id, k.kid_name, k.kid_surname, k.kid_birth, k.user_id, s.skip_id, DATE_FORMAT(s.skip_date, '%Y-%m-%d') AS skip_date FROM obedy_kids k LEFT JOIN obedy_skips s ON k.kid_id = s.kid_id AND s.skip_date >= ? WHERE k.user_id = ? ORDER BY kid_id";
+    
     pool.query(sql, [nowSkip, userID], (err, data) => {
         if (err) return res.json(err);
+        //console.log("res data:", data);
         return res.json(data);
     })
     console.log("userkids END");
@@ -215,6 +205,19 @@ app.delete('/deleteskip', (req, res) => {
         res.status(200).json({ message: 'success' });
     })
     console.log("delete skip END");
+})
+
+app.post('/kidskiplist', (req, res) => {
+    const kidID = req.body.kid_id;
+    console.log("kidID:", kidID);
+    const sql = "SELECT skip_id, DATE_FORMAT(skip_date, '%Y-%m-%d') AS skip_date FROM obedy_skips WHERE kid_id = ?";
+    
+    pool.query(sql, [kidID], (err, data) => {
+        if (err) return res.json(err);
+        //res.status(200).json({ message: 'success' });
+        return res.json(data);
+    })
+    console.log("kidskiplist END");
 })
 
 

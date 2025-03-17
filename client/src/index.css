@@ -77,7 +77,14 @@ button {
   min-width: 8em;
 }
 .revertBtn {
-  background-color: var(--themeSecondaryColor);
+  background-color: #ce0b0b;
+  padding: 0.25em;
+  border-radius: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  line-height: 1em;
+  color: white;
+  border: none;
 }
 .highLink {
   color: #fff;

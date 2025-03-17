@@ -64,7 +64,7 @@ const App = () => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
         >
-          <p>{modalTxt}</p>
+          <div>{modalTxt}</div>
         </Modal>
       </div>
     </div>
