@@ -1,3 +1,4 @@
+import { API_URL } from './config/env';
 import { useEffect, useState } from "react";
 
 function UsersList() { 
@@ -5,7 +6,8 @@ function UsersList() {
   const [data, setData] = useState([]);
 
   const fetchInfo = () => {
-    return fetch("http://localhost:3001/users")
+    // return fetch("http://localhost:3001/users")
+    return fetch(`${API_URL}/api/users`)
       .then((res) => res.json())
       .then((d) => setData(d))
   }

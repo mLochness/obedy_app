@@ -1,3 +1,4 @@
+import { API_URL } from './config/env';
 import { useEffect, useState } from "react";
 
 const KidsList = () => {
@@ -5,7 +6,8 @@ const KidsList = () => {
     const [data, setData] = useState([]);
     
     const fetchInfo = () => {
-      return fetch("http://localhost:3001/kids")
+      // return fetch("http://localhost:3001/kids")
+      return fetch(`${API_URL}/api/kids`)
         .then((res) => res.json())
         .then((d) => setData(d))    
       }

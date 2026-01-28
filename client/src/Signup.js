@@ -1,3 +1,4 @@
+import { API_URL } from './config/env';
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -51,7 +52,8 @@ const Signup = ({ signupOK, modalMsg }) => {
     setIsPending(true);
 
     // Submit the user data to the server
-    fetch("http://localhost:3001/signup", {
+    // fetch("http://localhost:3001/signup", {
+    fetch(`${API_URL}/api/signup`, {
       method: "POST",
       mode: 'cors',
       headers: {

@@ -9,8 +9,8 @@ const PrivateRoutes = ({ modalMsg, idleLogout }) => {
     // Idle timer -------------------------
     const redirect = useNavigate();
     const logout = () => {
-        // localStorage.removeItem("loginStorage");
-        sessionStorage.removeItem("loginStorage");
+        localStorage.removeItem("loginStorage");
+        // sessionStorage.removeItem("loginStorage");
         setToken(null);
         setUserRole(null);
         redirect('/login', {replace:true});

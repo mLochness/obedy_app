@@ -1,3 +1,4 @@
+import { API_URL } from './config/env';
 import { useEffect, useState, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from './auth/AuthContext';
@@ -38,15 +39,6 @@ const UserKids = ({ actionMessage, skipDate }) => {
     return day !== 0 && day !== 6;
   };
 
-  //datepicker custom trigger - button:
-  // const ChooseDateButton = forwardRef(
-  //   ({ value, onClick, className, key }, ref) => (
-  //     <button className={className} onClick={onClick} ref={ref} key={key}>
-  //       Vyberte dátum
-  //     </button>
-  //   ),
-  // );
-
   let nextSkipDate = skipDate;
   //console.log("userKids - nextSkipDate:", skipDate);
 
@@ -60,7 +52,8 @@ const UserKids = ({ actionMessage, skipDate }) => {
     console.log("fetchUserKids userID:", userID);
     setDatesArr([]);
 
-    fetch("http://localhost:3001/userkids?user_id=" + userID, {
+    // fetch("http://localhost:3001/userkids?user_id=" + userID, {
+    fetch(`${API_URL}/api/userkids?user_id=` + userID, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(checkSkip)
@@ -90,55 +83,14 @@ const UserKids = ({ actionMessage, skipDate }) => {
   }, [data]);
 
 
-  const handleKidSignout = (kid_id) => {
-    setErrors([]);
-    setKidId(kid_id);
-    setIsPending(true);
-    console.log("handleKidSignout END");
-  }
-
-  const kidSkip = () => {
-    console.log("skip RUN");
-    console.log("skip data:", skip);
-    fetch('http://localhost:3001/addskip', {
-      method: 'POST',
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(skip)
-    }).then((res) => res.json())
-      .then((data) => {
-        if (data.message === "success") {
-          console.log("skip added");
-          setIsPending(false);
-          actionMessage("Dieťa bolo odhlásené");
-          setKidId(null);
-          fetchUserKids();
-        } else {
-          setIsPending(false);
-          setErrors([data.message]);
-        }
-      })
-      .catch((err) => {
-        setErrors([err.message]);
-        setIsPending(false);
-        console.log("errors:", err);
-      })
-
-  }
-
-  useEffect(() => {
-    if (kidID !== null && nextSkipDate !== null) {
-      kidSkip();
-    }
-  }, [skip]);
-
-
   const handleSkipDelete = (skip_id) => {
     setErrors([]);
     setIsPending(true);
     console.log("skip_id:", skip_id);
     const skipID = { skip_id };
 
-    fetch("http://localhost:3001/deleteskip", {
+    // fetch("http://localhost:3001/deleteskip", {
+    fetch(`${API_URL}/api/deleteskip`, {
       method: 'DELETE',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(skipID)
@@ -163,11 +115,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
   }
 
   const dateModal = useRef(null);
-  // window.onclick = function (event) {
-  //   if (event.target === dateModal) {
-  //     dateModal.current.style.display = "none";
-  //   }
-  // }
+
   const dateRange = (kid_id, kid_name, kid_surname) => {
     //dateModal.current.style.display = "block";
     dateModal.current.style.transform = 'scale(1)';
@@ -189,7 +137,8 @@ const UserKids = ({ actionMessage, skipDate }) => {
   const handleMultiSkip = () => {
     console.log("multiskip:", multiskip);
     console.log("datesArr:", datesArr);
-    fetch('http://localhost:3001/multiskip', {
+    // fetch('http://localhost:3001/multiskip', {
+    fetch(`${API_URL}/api/multiskip`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(multiskip)
@@ -217,14 +166,16 @@ const UserKids = ({ actionMessage, skipDate }) => {
 
   }
 
-  const handleInfoButton = (kid_id) => {
+  const handleInfoButton = (kid_id, kid_name, kid_surname) => {
     setErrors([]);
     setIsPending(true);
     setKidSkipList([]);
+    setKidName(kid_name + " " + kid_surname);
     console.log("infoButton kid_id", kid_id);
     const kidID = { kid_id };
 
-    fetch("http://localhost:3001/kidskiplist", {
+    // fetch("http://localhost:3001/kidskiplist", {
+    fetch(`${API_URL}/api/kidskiplist`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(kidID)
@@ -249,8 +200,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
       actionMessage(
         <div>
            <h4><strong>{kidName} </strong><br></br>všetky odhlásené termíny:</h4>
-          {}
-          {kidSkipList.length === 0 ? "No data" : kidSkipList.map((skipObj) => {
+            {kidSkipList.length === 0 ? "No data" : kidSkipList.map((skipObj) => {
             return (
               <div className='skipLine' key={skipObj.skip_id}>
                 <div>{skipObj.skip_date} </div>
@@ -303,7 +253,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
               }
               </div>
               <div>
-                <button className="infoBtn" onClick={() => handleInfoButton(dataObj.kid_id)}>História</button>
+                <button className="infoBtn" onClick={() => handleInfoButton(dataObj.kid_id, dataObj.kid_name, dataObj.kid_surname)}>História</button>
               </div>
 
             </div>
@@ -314,16 +264,6 @@ const UserKids = ({ actionMessage, skipDate }) => {
       </br>
       <p className='errMessage'>{errors}</p>
 
-      {/* <div>
-        <h3>SkipList output:</h3>
-        {kidSkipList && kidSkipList.map((skipObj) => {
-          return (
-            <div className='skipLine' key={skipObj.skip_id}>
-              <div>{skipObj.skip_date} </div>
-            </div>
-          )
-        })}
-      </div> */}
 
       <dialog id="dateModal" className="dateModal" ref={dateModal} onClick={handleDateModalClose}>
         <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -340,7 +280,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
             disabledKeyboardNavigation
             calendarStartDay={1}
             filterDate={isWeekday}
-            minDate={new Date()}
+            minDate={new Date(nextSkipDate)}
             maxDate={addDays(new Date(), 13)}
             dateFormat="yyyy-MM-dd"
             inline

@@ -77,7 +77,7 @@ button {
   min-width: 8em;
 }
 .revertBtn {
-  background-color: #ce0b0b;
+  background-color:var(--themeMainColor) ;
   padding: 0.25em;
   border-radius: 50%;
   width: 1.5em;
@@ -85,6 +85,30 @@ button {
   line-height: 1em;
   color: white;
   border: none;
+  position: relative;
+}
+.revertBtn:hover {
+  border: none;
+  background-color: #ce0b0b;
+  color: #fff;
+}
+.revertBtn::after {
+  opacity: 0;
+  content: "ZRUŠIŤ";
+  position: absolute;
+  color: #fff;
+  background-color: #ce0b0b;
+  right: 50%;
+  top: -1.5em;
+  display: block;
+  padding: 0.25em 0.5em;
+  transform: translateX(50%);
+  border-radius: 0.5em;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.revertBtn:hover::after {
+  opacity: 1;
 }
 .highLink {
   color: #fff;
