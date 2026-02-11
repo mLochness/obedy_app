@@ -41,27 +41,98 @@ h4 {
   margin-bottom: 20px;
 }
 
-.navbar .links {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-}
-
-.navbar a {
-  margin-left: 0.5em;
-  text-decoration: none;
-  padding: 0.5em;
-  transition: all 0.3s ease;
-}
-
-.navbar a:hover {
-  color: var(--themeMainColor);
-}
-
 .content {
   width: 90vw;
   margin: 2em auto;
   padding: 20px;
+} 
+
+.menuBtnCon {
+  position: fixed;
+  width: 2.5em;
+  height: 2.5em;
+  right: 1em;
+  top: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 0.25em;
+  border: 1px solid white;
+  transition: all 0.25s ease;
+}
+.menuBtnCon:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+.menuBtnCon:has(.active) {
+  background-color: rgba(255, 255, 255, 1);
+}
+.menu {
+  display: flex;
+  flex-flow: column;
+  position: fixed;
+  right: -101vw;
+  top: 4em;
+  background-color: #ececec;
+  padding: 1em;
+  list-style: none;
+  border-radius: 0.25em;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 1em rgba(0, 0, 0, 0.25);
+}
+.menu.open {
+  right: 1em;
+}
+.menu li {
+  width: 100%;
+}
+.menu a {
+  text-decoration: none;
+  color: #333333;
+  font-size: 1em;
+  padding: 1em;
+  line-height: 3em;
+  transition: all 0.3s ease;
+}
+
+.menu a:hover {
+  color: var(--themeMainColor);
+}
+
+/* animated hamburger menu (https://codepen.io/ainalem/pen/LJYRxz)*/
+.ham {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 400ms;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.hamRotate.active {
+  transform: rotate(45deg);
+}
+.hamRotate180.active {
+  transform: rotate(180deg);
+}
+.line {
+  fill:none;
+  transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
+  stroke:#000;
+  stroke-width:5.5;
+  stroke-linecap:round;
+}
+.ham4 .top {
+  stroke-dasharray: 40 121;
+}
+.ham4 .bottom {
+  stroke-dasharray: 40 121;
+}
+.ham4.active .top {
+  stroke-dashoffset: -68px;
+}
+.ham4.active .bottom {
+  stroke-dashoffset: -68px;
 }
 
 button {

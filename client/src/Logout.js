@@ -17,7 +17,7 @@ const Logout = () => {
     };
 
     return (
-        <button id="logout" onClick={handleLogout} className="highLink" >Odhlásiť</button>
+        <button id="logout" onClick={handleLogout}>Odhlásiť</button>
     );
 
 };
