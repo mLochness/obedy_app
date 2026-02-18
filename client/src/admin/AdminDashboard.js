@@ -1,3 +1,4 @@
+import AdminSort from "./AdminSort";
 
 const AdminDashboard = () => {
 
@@ -5,7 +6,9 @@ const AdminDashboard = () => {
     return (
       <div>
         <h2>Admin Dashboard</h2>
-        <p>Admin secrets here...</p>
+        <p></p>
+        <p>Zoradiť podľa:</p>
+        <AdminSort/>
       </div>
     );
 }

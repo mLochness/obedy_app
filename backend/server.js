@@ -216,6 +216,17 @@ app.post('/api/kidskiplist', (req, res) => {
     console.log("kidskiplist END");
 })
 
+app.get('/api/sortall', (req, res) => {
+    const sql = "SELECT k.kid_id, k.kid_name, k.kid_surname, k.kid_birth, u.username, COUNT(s.skip_id) AS total_skips, MAX(s.skip_date) AS last_skip FROM obedy_kids k JOIN obedy_users u ON k.user_id = u.user_id LEFT JOIN obedy_skips s ON k.kid_id = s.kid_id GROUP BY k.kid_id ORDER BY k.kid_surname ASC;"
+    pool.query(sql, (err, data) => {
+        
+        if (err) return res.json(err);
+        console.log("data:", data);
+        return res.json(data);
+    })
+   
+})
+
 
 app.listen(3001, () => {
     console.log('Server started on port 3001...');
