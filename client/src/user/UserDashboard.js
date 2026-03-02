@@ -1,18 +1,17 @@
 import UserKids from "../UserKids";
 
-const UserDashboard = ({ modalMsg, kidsAction, skipDate }) => { 
-  
+const UserDashboard = ({ modalMsg, skipDate }) => {
 
-  const handleKidAction = (data) => {
-    modalMsg(data);
-    kidsAction();
-  }
 
-    return (
-      <div>
-        <UserKids skipDate={skipDate} actionMessage={handleKidAction} />
-      </div>
-    );
-  }
+  const handleKidAction = (message, onConfirm = null) => {
+    modalMsg(message, onConfirm);
+  };
 
-  export default UserDashboard;
+  return (
+    <div>
+      <UserKids skipDate={skipDate} actionMessage={handleKidAction} />
+    </div>
+  );
+}
+
+export default UserDashboard;

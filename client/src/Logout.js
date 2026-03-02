@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from "./auth/AuthContext";
+import { SlLogout } from "react-icons/sl";
 
 const Logout = () => {
     const redirect = useNavigate();
@@ -17,7 +18,7 @@ const Logout = () => {
     };
 
     return (
-        <button id="logout" onClick={handleLogout}>Odhlásiť</button>
+        <button id="logout" onClick={handleLogout}>Odhlásiť <SlLogout /></button>
     );
 
 };

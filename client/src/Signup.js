@@ -122,11 +122,12 @@ const Signup = ({ signupOK, modalMsg }) => {
             value={email}
             placeholder='Váš E-mail'
             onChange={(e) => setEmail(e.target.value)} />
+            <p className='errMessage'>{errors}</p>
 
           {!isPending && <button onClick={handleSignin}> Registrovať</button>}
           {isPending && <button disabled>Registrujem...</button>}
         </form>
-        <p className='errMessage'>{errors}</p>
+        
         <div className='underFormLine'>Máte už účet? <Link to="/login">Prihláste sa.</Link></div>
       </div>
     </div>

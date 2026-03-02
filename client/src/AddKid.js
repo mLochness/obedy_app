@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useContext } from "react";
 import { AuthContext } from './auth/AuthContext';
 
-const AddKid = ({ addKidOK, modalMsg }) => {
+const AddKid = ({ addKidMsg, modalMsg }) => {
     const [kidName, setKidName] = useState('');
     const [kidSurname, setKidSurame] = useState('');
     const [birthDate, setBirthDate] = useState('');
@@ -29,7 +29,7 @@ const AddKid = ({ addKidOK, modalMsg }) => {
             console.log("kid added");
             setIsPending(false);
             redirect('/udashboard');
-            addKidOK();
+            addKidMsg();
             modalMsg("Dieťa bolo úspešne pridané");
         })
             .catch((err) => {
@@ -37,6 +37,20 @@ const AddKid = ({ addKidOK, modalMsg }) => {
             });
 
     }
+
+    const handleChange = (e) => {
+    const selectedDate = e.target.value;
+    const today = new Date().toISOString().split("T")[0];
+
+    if (selectedDate > today) {
+        modalMsg("Budúci dátum nie je povolený");
+        addKidMsg();
+        return;
+    }
+
+    setBirthDate(selectedDate);
+};
+
 
     return (
         <div className='loginForm'>
@@ -65,7 +79,7 @@ const AddKid = ({ addKidOK, modalMsg }) => {
                     }}
                     required
                     value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)} />
+                    onChange={handleChange} />
 
                 {!isPending && <button>Odoslať</button>}
                 {isPending && <button disabled>Pridávam drobca...</button>}

@@ -7,6 +7,9 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import sk from "date-fns/locale/sk";
 import { addDays } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
+import { SlSettings } from "react-icons/sl";
+import { GoHistory } from "react-icons/go";
+import { SlCalender } from "react-icons/sl";
 
 const UserKids = ({ actionMessage, skipDate }) => {
 
@@ -18,7 +21,12 @@ const UserKids = ({ actionMessage, skipDate }) => {
   const [isPending, setIsPending] = useState(true);
   const [kidName, setKidName] = useState(null);
   const [modalKidId, setModalKidId] = useState(null);
-  const [kidSkipList, setKidSkipList] = useState([]);
+  const [editingKidId, setEditingKidId] = useState(null);
+  const [editForm, setEditForm] = useState({
+    kid_name: "",
+    kid_surname: "",
+    kid_birth: ""
+  });
 
 
   //datepicker:
@@ -40,19 +48,15 @@ const UserKids = ({ actionMessage, skipDate }) => {
   };
 
   let nextSkipDate = skipDate;
-  //console.log("userKids - nextSkipDate:", skipDate);
 
   const skip = { kidID, skipDate };
 
   const fetchUserKids = () => {
     setErrors([]);
     const checkSkip = { nextSkipDate, userID };
-    console.log("fetchUserKids skipDate:", nextSkipDate)
     setIsPending(true);
-    console.log("fetchUserKids userID:", userID);
     setDatesArr([]);
 
-    // fetch("http://localhost:3001/userkids?user_id=" + userID, {
     fetch(`${API_URL}/api/userkids?user_id=` + userID, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
@@ -62,13 +66,10 @@ const UserKids = ({ actionMessage, skipDate }) => {
       .then((d) => { setData(d) })
       .then(() => { setIsPending(false); })
       .then(() => {
-        console.log("fetched UserKids data not set yet? :", data);
       })
       .catch((err) => {
         setErrors([err.message]);
-        console.log("errors:", err);
       });
-
   }
 
   useEffect(() => {
@@ -76,7 +77,6 @@ const UserKids = ({ actionMessage, skipDate }) => {
   }, [userID]);
 
   useEffect(() => {
-    console.log("data useEffect RUN, data:", data);
     if (data) {
       setKidsList([...new Map(data.map(item => [item.kid_id, item])).values()]);
     }
@@ -86,10 +86,8 @@ const UserKids = ({ actionMessage, skipDate }) => {
   const handleSkipDelete = (skip_id) => {
     setErrors([]);
     setIsPending(true);
-    console.log("skip_id:", skip_id);
     const skipID = { skip_id };
 
-    // fetch("http://localhost:3001/deleteskip", {
     fetch(`${API_URL}/api/deleteskip`, {
       method: 'DELETE',
       headers: { "Content-Type": "application/json" },
@@ -97,7 +95,6 @@ const UserKids = ({ actionMessage, skipDate }) => {
     }).then((res) => res.json())
       .then((data) => {
         if (data.message === "success") {
-          console.log("skip deleted");
           actionMessage("Odhlásenie bolo zrušené");
           fetchUserKids();
         } else {
@@ -108,20 +105,15 @@ const UserKids = ({ actionMessage, skipDate }) => {
       .catch((err) => {
         setErrors([err.message]);
         setIsPending(false);
-        console.log("errors:", err);
       })
-
-    console.log("handleSkipDelete END");
   }
 
   const dateModal = useRef(null);
 
   const dateRange = (kid_id, kid_name, kid_surname) => {
-    //dateModal.current.style.display = "block";
     dateModal.current.style.transform = 'scale(1)';
     setKidName(kid_name + " " + kid_surname);
     setModalKidId(kid_id);
-    //handleMultiSkip();
   }
   const handleDateModalClose = () => {
     dateModal.current.style.transform = 'scale(0)'
@@ -135,9 +127,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
   const multiskip = { modalKidId, datesArr };
 
   const handleMultiSkip = () => {
-    console.log("multiskip:", multiskip);
-    console.log("datesArr:", datesArr);
-    // fetch('http://localhost:3001/multiskip', {
+
     fetch(`${API_URL}/api/multiskip`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
@@ -145,72 +135,113 @@ const UserKids = ({ actionMessage, skipDate }) => {
     }).then((res) => res.json())
       .then((data) => {
         if (data.message === "success") {
-          console.log("multiskip added");
           setIsPending(false);
           actionMessage("Dieťa bolo odhlásené na zvolené termíny");
           setKidId(null);
           setDatesArr(null);
-          //setNextSkipDate(null);
           fetchUserKids();
         } else {
           setIsPending(false);
-          //setErrors("Nastala chyba, skúste to neskôr");
           setErrors([data.message]);
         }
       })
       .catch((err) => {
         setErrors([err.message]);
         setIsPending(false);
-        console.log("errors:", err);
       })
 
   }
 
-  const handleInfoButton = (kid_id, kid_name, kid_surname) => {
+
+  const handleInfoButton = async (kid_id, kid_name, kid_surname) => {
     setErrors([]);
     setIsPending(true);
-    setKidSkipList([]);
-    setKidName(kid_name + " " + kid_surname);
-    console.log("infoButton kid_id", kid_id);
+    setKidId(kid_id);
+    setKidName(`${kid_name} ${kid_surname}`);
     const kidID = { kid_id };
 
-    // fetch("http://localhost:3001/kidskiplist", {
     fetch(`${API_URL}/api/kidskiplist`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(kidID)
     }).then((res) => res.json())
       .then((d) => {
-        setKidSkipList(d);
         setIsPending(false);
-      })
-      .catch((err) => {
-        setErrors([err.message]);
-        setIsPending(false);
-        console.log("errors:", err);
-      })
 
-    console.log("handleInfoButton END");
+        const fullName = `${kid_name} ${kid_surname}`;
 
+        actionMessage(
+          <div>
+            <h4><strong>{fullName}</strong><br></br>všetky odhlásené termíny:</h4>
+            {d.length === 0 ? "Zatiaľ nič" : d.map((skipObj) => {
+              return (
+                <div className='skipLine' key={skipObj.skip_id}>
+                  <div>{skipObj.skip_date} </div>
+                </div>
+              )
+            })}
+          </div>
+        );
+      });
   }
 
-  useEffect(() => {
-    console.log("skiplist useEffect RUN, data:", kidSkipList);
-    if (kidSkipList.length > 0) {
-      actionMessage(
-        <div>
-           <h4><strong>{kidName} </strong><br></br>všetky odhlásené termíny:</h4>
-            {kidSkipList.length === 0 ? "No data" : kidSkipList.map((skipObj) => {
-            return (
-              <div className='skipLine' key={skipObj.skip_id}>
-                <div>{skipObj.skip_date} </div>
-              </div>
-            )
-          })}
-        </div>
-      )
+
+  const handleSave = async (kidId) => {
+    try {
+      await fetch(`${API_URL}/api/editkid/${kidId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editForm),
+      });
+
+      // update local state without full reload
+      setKidsList((prev) =>
+        prev.map((kid) =>
+          kid.kid_id === kidId ? { ...kid, ...editForm } : kid
+        )
+      );
+
+      setEditingKidId(null);
+    } catch (err) {
+      console.error(err);
     }
-  }, [kidSkipList]);
+  };
+
+
+  const handleDeleteKid = (kidId) => {
+  actionMessage(
+    "Určite chcete odstrániť dieťa z aplikácie?",
+    async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/deletekid/${kidId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "x-user-id": userID  // pass the current user ID
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Failed to delete kid:", errorData.message || errorData);
+          return;
+        }
+
+        // Only update state if delete succeeded
+        setKidsList((prev) =>
+          prev.filter((kid) => kid.kid_id !== kidId)
+        );
+
+        setEditingKidId(null);
+      } catch (err) {
+        console.error("Delete kid request failed:", err);
+      }
+    }
+  );
+};
+
 
 
   if (isPending) {
@@ -221,43 +252,99 @@ const UserKids = ({ actionMessage, skipDate }) => {
   return (
     <div onKeyDown={handleModalEscape}>
       <h2>Moje deti</h2>
-      <div className='itemLine itemLineHead'>
-        <div><div>Meno</div>
-          <div className="secondaryLine">Dátum nar.</div></div>
-        <div>Odhlásenie</div>
-        <div>Odhlásené termíny</div>
-        <div>História</div>
-      </div>
+      <p>&nbsp;</p>
+
       <div>
         {kidsList.length === 0 ? <Link to="/addkid"><button>Zaregistrujte dieťa</button></Link> : kidsList.map((dataObj) => {
           return (
-            <div className='itemLine' key={dataObj.kid_id}>
+            <div className="kid-card" key={dataObj.kid_id} >
 
-              <div>
-                <div>{dataObj.kid_name} {dataObj.kid_surname}</div>
-                <div className="secondaryLine">{dataObj.kid_birth.slice(0, 10)}</div>
-              </div>
-              <div>
-                <button onClick={() => dateRange(dataObj.kid_id, dataObj.kid_name, dataObj.kid_surname)}>VYBERTE DÁTUM</button>
-              </div>
-              <div>{
-                data.map((skipObj) => {
-                  return (
-                    <div className="dateRegistered" key={skipObj.kid_id + "-" + skipObj.skip_id}>{dataObj.kid_id === skipObj.kid_id && skipObj.skip_date ?
-                      <div>{skipObj.skip_date} &nbsp; <button className="revertBtn" onClick={() => handleSkipDelete(skipObj.skip_id)}>✕</button></div>
-                      :
-                      ""
-                    }</div>
-                  )
-                })
-              }
-              </div>
-              <div>
-                <button className="infoBtn" onClick={() => handleInfoButton(dataObj.kid_id, dataObj.kid_name, dataObj.kid_surname)}>História</button>
-              </div>
+              {editingKidId === dataObj.kid_id ? (
+                <div className="edit-form">
+                  <input
+                    type="text"
+                    value={editForm.kid_name}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, kid_name: e.target.value })
+                    }
+                    placeholder="Name"
+                  />
 
+                  <input
+                    type="text"
+                    value={editForm.kid_surname}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, kid_surname: e.target.value })
+                    }
+                    placeholder="Surname"
+                  />
+
+                  <input
+                    type="date"
+                    value={editForm.kid_birth}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, kid_birth: e.target.value })
+                    }
+                  />
+
+                  <button onClick={() => handleSave(dataObj.kid_id)}>Uložiť</button>
+                  <button onClick={() => setEditingKidId(null)}>Zrušiť</button>
+                  <button onClick={() => handleDeleteKid(dataObj.kid_id)}>Odstrániť</button>
+                </div>
+              ) : (
+                <>
+                  <div className='kid-nameNdate'>
+                    <strong className='kid-name'>
+                      {dataObj.kid_name} {dataObj.kid_surname}
+                    </strong>
+                    <div className="secondaryLine">
+                      Nar.: {dataObj.kid_birth.slice(0, 10)}
+                    </div>
+                  </div>
+                  <div className='buttonLine'>
+
+
+                    <div>
+                      <button onClick={() => dateRange(dataObj.kid_id, dataObj.kid_name, dataObj.kid_surname)}>Vyberte dátum <SlCalender /></button>
+                    </div>
+                    <div>{
+                      data.map((skipObj) => {
+                        return (
+                          <div className="dateRegistered" key={skipObj.kid_id + "-" + skipObj.skip_id}>{dataObj.kid_id === skipObj.kid_id && skipObj.skip_date ?
+                            <div>{skipObj.skip_date} &nbsp; <button className="revertBtn" onClick={() => handleSkipDelete(skipObj.skip_id)}>✕</button></div>
+                            :
+                            ""
+                          }</div>
+                        )
+                      })
+                    }
+                    </div>
+
+                    <div>
+                      <button className="infoBtn"
+                        onClick={() => handleInfoButton(dataObj.kid_id, dataObj.kid_name, dataObj.kid_surname)
+                        }>História <GoHistory /></button>
+                    </div>
+                    <div>
+                      <button className="editBtn"
+                        onClick={() => {
+                          setEditingKidId(dataObj.kid_id);
+                          setEditForm({
+                            kid_name: dataObj.kid_name,
+                            kid_surname: dataObj.kid_surname,
+                            kid_birth: dataObj.kid_birth.slice(0, 10)
+                          });
+                        }}
+                      >
+                        Upraviť <SlSettings />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )
+
         })}
       </div>
       <br>
@@ -274,18 +361,16 @@ const UserKids = ({ actionMessage, skipDate }) => {
             locale="sk"
             selectedDates={selectedDates}
             selectsMultiple
-            //onChange={onChange}
             onChange={onDatepickerChange}
             shouldCloseOnSelect={false}
             disabledKeyboardNavigation
             calendarStartDay={1}
             filterDate={isWeekday}
             minDate={new Date(nextSkipDate)}
+            //minDate={nextSkipDate ? new Date(nextSkipDate) : new Date()}
             maxDate={addDays(new Date(), 13)}
             dateFormat="yyyy-MM-dd"
             inline
-          // customInput={<ChooseDateButton className="chooseDateButton" />}
-
           />
 
           {listDates}

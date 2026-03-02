@@ -2,12 +2,11 @@ import { Link } from 'react-router-dom';
 import { useState, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "./auth/AuthContext";
 import Logout from "./Logout";
-//import { BurgerMenu } from "./scripts/burgerMenu";
+import ToggleDarkMode from './ToggleDarkMode';
 
 const Navbar = () => {
 
     const { token, userRole, setUserRole } = useContext(AuthContext);
-    //const { userRole } = useContext(AuthContext);
 
     // burger menu ************** >>
     const [isOpen, setIsOpen] = useState(false);
@@ -42,14 +41,11 @@ const Navbar = () => {
         };
     }, [isOpen]);
     
-    // ********************
-
-    console.log("Navbar - is there any token?", token);
-    console.log("userRole:", userRole);
-
     useEffect(() => {
         setUserRole(userRole);
     }, [token])
+
+    
 
     return (
         <nav className="navbar">
@@ -77,12 +73,14 @@ const Navbar = () => {
             </div>
             <ul className={`menu ${isOpen ? "open" : ""}`} ref={menuRef}>
                 <li onClick={closeMenu}>{userRole === "admin" && <Link to="/adashboard">Domov</Link>}</li>
+                <li onClick={closeMenu}>{userRole === "admin" && <Link to="/timeset">Čas</Link>}</li>
                 <li onClick={closeMenu}>{userRole === "admin" && <Link to="/users">Users</Link>}</li>
                 <li onClick={closeMenu}>{userRole === "admin" && <Link to="/kids">Kids</Link>}</li>
                 <li onClick={closeMenu}>{userRole === "user" && <Link to="/udashboard">Domov</Link>}</li>
                 <li onClick={closeMenu}>{userRole === "user" && <Link to="/addkid">Pridať dieťa</Link>}</li>
                 <li onClick={closeMenu}>{!token && <Link id="login" to="/login">Prihlásenie ☻</Link>}</li>
                 <li onClick={closeMenu}>{token && <Logout />}</li>
+                <li onClick={closeMenu}><ToggleDarkMode /></li>
             </ul>
         </nav>
     );

@@ -2,20 +2,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Sometype+Mono:wght@400;700&display=swap');
 
 :root {
-  --themeMainColor: #265ae9;
-  --themeSecondaryColor: #f7d13d;
-  --themeErrorColor: #7d0202;
+  /* Main */
+  --main-h: 224;
+  --main-s: 82%;
+  --main-l: 53%;
+
+  /* Secondary */
+  --secondary-h: 48;
+  --secondary-s: 92%;
+  --secondary-l: 60%;
+
+  /* Error */
+  --error-h: 0;
+  --error-s: 97%;
+  --error-l: 25%;
+
+  /* Font */
+  --font-h: 0;
+  --font-s: 0%;
+  --font-l: 20%;
+
+  /* Background */
+  --bg-h: 0;
+  --bg-s: 0%;
+  --bg-l: 74%;
+
+  --themeFontFamily: "Montserrat";
+  --borderRadius: 0.5em;
 }
+
 
 * {
-  margin: 0;
-  font-family: "Montserrat";
-  color: #333333;
+  box-sizing: border-box;
 }
 
+html {
+  max-width:100%;
+  overflow-x: hidden;
+}
+ 
+
 body {
-  background-color: #bdbdbd;
-    font-size: clamp(1em, 1.2vw, 1.25em);
+    /* Final usable colors */
+  --themeMainColor: hsl(var(--main-h), var(--main-s), var(--main-l));
+  --themeSecondaryColor: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
+  --themeErrorColor: hsl(var(--error-h), var(--error-s), var(--error-l));
+  --themeFontColor: hsl(var(--font-h), var(--font-s), var(--font-l));
+  --themeBackgroundColor: hsl(var(--bg-h), var(--bg-s), var(--bg-l));
+
+  background-color: var(--themeBackgroundColor);
+  color: var(--themeFontColor);
+  font-family: var(--themeFontFamily);
+  font-size: clamp(1em, 1.2vw, 1.25em);
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+body.dark {
+  --bg-l: 10%;
+  --font-l: 90%;
+  --main-l: 65%;
 }
 
 .navbar {
@@ -32,20 +79,19 @@ body {
   margin-bottom: 0;
 }
 
-h1 {
-  margin-bottom: 30px;
-}
-
 h4 {
   font-weight: 400;
   margin-bottom: 20px;
 }
 
 .content {
-  width: 90vw;
+  width: 94vw;
   margin: 2em auto;
-  padding: 20px;
 } 
+
+a {
+  color: hsl(calc(var(--font-h) + 202), calc(var(--font-s) + 90%), var(--font-l));
+}
 
 .menuBtnCon {
   position: fixed;
@@ -58,8 +104,9 @@ h4 {
   align-items: center;
   background-color: rgba(255, 255, 255, 0.15);
   border-radius: 0.25em;
-  border: 1px solid white;
+  border: 1px solid var(--themeMainColor);
   transition: all 0.25s ease;
+  z-index: 999;
 }
 .menuBtnCon:hover {
   background-color: rgba(255, 255, 255, 1);
@@ -79,6 +126,7 @@ h4 {
   border-radius: 0.25em;
   transition: all 0.25s ease;
   box-shadow: 0 0 1em rgba(0, 0, 0, 0.25);
+  z-index: 999;
 }
 .menu.open {
   right: 1em;
@@ -118,7 +166,7 @@ h4 {
 .line {
   fill:none;
   transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
-  stroke:#000;
+  stroke:var(--themeMainColor);
   stroke-width:5.5;
   stroke-linecap:round;
 }
@@ -142,7 +190,7 @@ button {
   border-radius: 0.5em;
   border: 1px solid white;
   cursor: pointer;
-  margin: 0.25em 0;
+  font-family: var(--themeFontFamily);
 }
 .itemLine > div > button {
   min-width: 8em;
@@ -236,6 +284,7 @@ textarea {
   border-radius: 6px;
   border: 1px solid #ccc;
   box-sizing: border-box;
+  font-family: var(--themeFontFamily);
 }
 
 .loginForm textarea {
@@ -290,19 +339,22 @@ button:hover {
 }
 
 .countDown {
-  background-color: #f0f0f0;
+  color: hsl(var(--font-h), var(--font-s), calc(var(--font-l) + 5%));
+  background: hsl(var(--bg-h), var(--bg-s), calc(var(--bg-l) + 7%));
   display: flex;
   flex-flow: column;
   width: 100%;
   margin: auto;
   justify-content: center;
   align-items: center;
-  padding: 20px 0 0;
+  padding: 1em;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .countDown h1 {
   font-family: 'Sometype Mono', monospace;
+  margin: 0.25em 0 0.5em;
 }
 
 .itemLine {
@@ -423,4 +475,97 @@ button:hover {
   margin-top: 1em;
   font-size: 0.9em;
   border-color: var(--themeMainColor);
+}
+
+.sortBtnCon {
+  display: flex;
+  gap: 0.25em;
+  margin-bottom: 0.25em;
+  flex-wrap: wrap;
+  padding: 0.5em 0;
+}
+
+.kid-card {
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: hsl(var(--bg-h), var(--bg-s), calc(var(--bg-l) + 7%));
+  position: relative;
+}
+
+.kid-name {
+  display: block;
+  font-size: 1.2em;
+}
+
+.kid-info {
+  display: grid;
+  gap: 0.5em;
+  font-size: 0.85em;
+}
+
+.kid-card-number {
+  position: absolute;
+  right: 1em;
+  font-size: 0.75em;
+  opacity: 0.6;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .kid-info {
+    grid-template-columns: 
+      1.2fr   /* Nar. */
+      1.2fr   /* Rodič */
+      0.8fr   /* Odhlásení */
+      1.2fr   /* Naposledy */
+      1.2fr   /* Pridané */
+      auto;   /* Button */
+    align-items: center;
+  }
+
+  .kid-info div span {
+    display: none; /* skry labely na desktope */
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .kid-info div {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .kid-info div span {
+    font-weight: 600;
+  }
+
+  .kid-info button {
+    margin-top: 8px;
+  }
+}
+
+#adminTimeSet {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+}
+#adminTimeSet input {
+  font-size: 2em;
+  font-weight: bold;
+  width: auto;
+}
+
+.home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+}
+.homeIcon {
+  display: flex;
+  height: calc(10em + 5vw);
+  width: calc(10em + 5vw);
+  margin: 3em auto;
 }

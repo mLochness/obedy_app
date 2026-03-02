@@ -7,7 +7,6 @@ const AdminDashboard = () => {
       <div>
         <h2>Admin Dashboard</h2>
         <p></p>
-        <p>Zoradiť podľa:</p>
         <AdminSort/>
       </div>
     );
