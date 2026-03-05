@@ -10,6 +10,9 @@ import "react-datepicker/dist/react-datepicker.css";
 import { SlSettings } from "react-icons/sl";
 import { GoHistory } from "react-icons/go";
 import { SlCalender } from "react-icons/sl";
+import { SlCheck } from "react-icons/sl";
+import { SlClose } from "react-icons/sl";
+import { SlTrash } from "react-icons/sl";
 
 const UserKids = ({ actionMessage, skipDate }) => {
 
@@ -47,7 +50,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
     return day !== 0 && day !== 6;
   };
 
-  let nextSkipDate = skipDate;
+  const nextSkipDate = skipDate;
 
   const skip = { kidID, skipDate };
 
@@ -116,7 +119,10 @@ const UserKids = ({ actionMessage, skipDate }) => {
     setModalKidId(kid_id);
   }
   const handleDateModalClose = () => {
-    dateModal.current.style.transform = 'scale(0)'
+    dateModal.current.style.transform = 'scale(0)';
+    setDatesArr([]);
+    setSelectedDates(null);
+    setModalKidId(null);
   }
   const handleModalEscape = (event) => {
     if (event.key === 'Escape') {
@@ -211,36 +217,36 @@ const UserKids = ({ actionMessage, skipDate }) => {
 
 
   const handleDeleteKid = (kidId) => {
-  actionMessage(
-    "Určite chcete odstrániť dieťa z aplikácie?",
-    async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/deletekid/${kidId}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            "x-user-id": userID  // pass the current user ID
+    actionMessage(
+      "Určite chcete odstrániť dieťa z aplikácie?",
+      async () => {
+        try {
+          const response = await fetch(`${API_URL}/api/deletekid/${kidId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "x-user-id": userID  // pass the current user ID
+            }
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Failed to delete kid:", errorData.message || errorData);
+            return;
           }
-        });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Failed to delete kid:", errorData.message || errorData);
-          return;
+          // Only update state if delete succeeded
+          setKidsList((prev) =>
+            prev.filter((kid) => kid.kid_id !== kidId)
+          );
+
+          setEditingKidId(null);
+        } catch (err) {
+          console.error("Delete kid request failed:", err);
         }
-
-        // Only update state if delete succeeded
-        setKidsList((prev) =>
-          prev.filter((kid) => kid.kid_id !== kidId)
-        );
-
-        setEditingKidId(null);
-      } catch (err) {
-        console.error("Delete kid request failed:", err);
       }
-    }
-  );
-};
+    );
+  };
 
 
 
@@ -252,7 +258,6 @@ const UserKids = ({ actionMessage, skipDate }) => {
   return (
     <div onKeyDown={handleModalEscape}>
       <h2>Moje deti</h2>
-      <p>&nbsp;</p>
 
       <div>
         {kidsList.length === 0 ? <Link to="/addkid"><button>Zaregistrujte dieťa</button></Link> : kidsList.map((dataObj) => {
@@ -287,9 +292,9 @@ const UserKids = ({ actionMessage, skipDate }) => {
                     }
                   />
 
-                  <button onClick={() => handleSave(dataObj.kid_id)}>Uložiť</button>
-                  <button onClick={() => setEditingKidId(null)}>Zrušiť</button>
-                  <button onClick={() => handleDeleteKid(dataObj.kid_id)}>Odstrániť</button>
+                  <button className='confirm' onClick={() => handleSave(dataObj.kid_id)}>Uložiť <SlCheck /></button>
+                  <button className='cancel' onClick={() => setEditingKidId(null)}>Zrušiť <SlClose /></button>
+                  <button className='delete' onClick={() => handleDeleteKid(dataObj.kid_id)}>Odstrániť <SlTrash /></button>
                 </div>
               ) : (
                 <>
@@ -356,7 +361,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
         <div className="modal-content" onClick={e => e.stopPropagation()}>
           <span className="dateModalClose" onClick={handleDateModalClose}>&times;</span>
           <h3>{kidName}</h3>
-          kid ID: {modalKidId}
+          <span>Pridať termíny:</span>
           <DatePicker
             locale="sk"
             selectedDates={selectedDates}

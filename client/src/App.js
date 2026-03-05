@@ -14,6 +14,8 @@ import UsersList from './UsersList';
 import KidsList from './KidsList';
 import Modal from './Modal';
 import AdminTimeSetting from './admin/AdminTimeSetting';
+import { SlCheck } from "react-icons/sl";
+import { SlClose } from "react-icons/sl";
 
 const App = () => {
 
@@ -86,7 +88,7 @@ useEffect(() => {
           <Route path="/signup" element={<Signup modalMsg={modalMsg} signupOK={handleOpenModal} />} />
           <Route element={<PrivateRoutes modalMsg={modalMsg} idleLogout={handleOpenModal} />}>
             <Route element={<UserDashboard modalMsg={modalMsg} skipDate={nextSkipDate} />} path="/udashboard" />
-            <Route element={<AdminDashboard />} path="/adashboard" />
+            <Route element={<AdminDashboard modalMsg={modalMsg} />} path="/adashboard" />
             <Route element={<AdminTimeSetting modalMsg={modalMsg} cutoffConfig={cutoffConfig} onCutoffChange={setCutoffConfig}/>} path="/timeset" />
             <Route element={<AddKid modalMsg={modalMsg} addKidMsg={handleOpenModal} />} path="/addkid" />
             <Route element={<KidsList />} path="/kids" />
@@ -110,11 +112,11 @@ useEffect(() => {
                     handleCloseModal();
                   }}
                 >
-                  Áno
+                  Áno <SlCheck />
                 </button>
 
                 <button onClick={handleCloseModal}>
-                  Zrušiť
+                  Zrušiť <SlClose />
                 </button>
               </>
             ) : (

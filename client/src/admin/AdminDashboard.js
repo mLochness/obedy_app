@@ -1,13 +1,16 @@
 import AdminSort from "./AdminSort";
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ modalMsg }) => {
 
-  //console.log("A-dashboard token:", token);
-    return (
+  const handleKidAction = (message, onConfirm = null) => {
+    modalMsg(message, onConfirm);
+  };
+
+  return (
       <div>
         <h2>Admin Dashboard</h2>
         <p></p>
-        <AdminSort/>
+        <AdminSort actionMessage={handleKidAction} />
       </div>
     );
 }

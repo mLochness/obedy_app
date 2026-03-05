@@ -86,7 +86,7 @@ const Countdown = ({ dateUpdate, cutoffConfig }) => {
   return (
     <div className="countDown">
       <p>
-        Do najbližšieho termínu:{" "}
+        Do najbližšieho termínu:<br></br>
         <strong>{dayNames[nextCutoff.getDay()]}{"\u00A0"}
         {pad(nextCutoff.getDate())}-
         {pad(nextCutoff.getMonth() + 1)}-

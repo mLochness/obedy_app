@@ -27,6 +27,16 @@
   --bg-s: 0%;
   --bg-l: 74%;
 
+  /* White */
+  --wb-h: 0;
+  --wb-s: 0%;
+  --wb-l: 100%;
+
+  /* Black */
+  --bw-h: 0;
+  --bw-s: 0%;
+  --bw-l: 0%;
+
   --themeFontFamily: "Montserrat";
   --borderRadius: 0.5em;
 }
@@ -49,6 +59,8 @@ body {
   --themeErrorColor: hsl(var(--error-h), var(--error-s), var(--error-l));
   --themeFontColor: hsl(var(--font-h), var(--font-s), var(--font-l));
   --themeBackgroundColor: hsl(var(--bg-h), var(--bg-s), var(--bg-l));
+  --whiteToBlack: hsl(var(--wb-h), var(--wb-s), var(--wb-l));
+  --blackToWhite: hsl(var(--bw-h), var(--bw-s), var(--bw-l));
 
   background-color: var(--themeBackgroundColor);
   color: var(--themeFontColor);
@@ -63,6 +75,8 @@ body.dark {
   --bg-l: 10%;
   --font-l: 90%;
   --main-l: 65%;
+  --wb-l: 0%;
+  --bw-l: 100%;
 }
 
 .navbar {
@@ -85,8 +99,8 @@ h4 {
 }
 
 .content {
-  width: 94vw;
-  margin: 2em auto;
+  margin: 0 auto;
+  padding: calc(10px + 1vw);
 } 
 
 a {
@@ -106,7 +120,7 @@ a {
   border-radius: 0.25em;
   border: 1px solid var(--themeMainColor);
   transition: all 0.25s ease;
-  z-index: 999;
+  z-index: 90;
 }
 .menuBtnCon:hover {
   background-color: rgba(255, 255, 255, 1);
@@ -184,16 +198,30 @@ a {
 }
 
 button {
+  margin: 0.15em 0.3em 0.15em 0;
   text-decoration: none;
   padding: 1em 1.5em;
   transition: all 0.3s ease;
-  border-radius: 0.5em;
-  border: 1px solid white;
+  border-radius: var(--borderRadius);
+  border: 0;
   cursor: pointer;
   font-family: var(--themeFontFamily);
+  background-color: var(--whiteToBlack);
+  color: var(--blackToWhite);
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
 }
-.itemLine > div > button {
-  min-width: 8em;
+button:hover {
+  background-color: var(--themeMainColor);
+  color: var(--themeBackgroundColor);
+}
+.confirm:hover {
+  background-color: var(--themeMainColor);
+}
+.cancel:hover {
+  background-color: hsl(var(--main-h), calc(var(--main-s) - 62%), calc(var(--main-l) - 25%));
+}
+.delete:hover {
+  background-color: var(--themeErrorColor);
 }
 .revertBtn {
   background-color:var(--themeMainColor) ;
@@ -228,34 +256,6 @@ button {
 }
 .revertBtn:hover::after {
   opacity: 1;
-}
-.highLink {
-  color: #fff;
-  border-radius: 0.5em;
-  background-color: var(--themeMainColor);
-  transition: all 0.3s ease;
-}
-
-.highLink:hover {
-  color: var(--themeMainColor);
-  background-color: #b9b9b9;
-}
-
-.item-preview {
-  margin-bottom: 20px;
-  padding: 15px 20px;
-  background-color: #e2e2e2;
-  border-radius: 9px;
-  transition: all 0.3s ease;
-}
-
-.item-preview:hover {
-  background-color: #ffffff;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-}
-
-.item-preview a {
-  text-decoration: none;
 }
 
 .loginForm {
@@ -309,12 +309,6 @@ select {
   width: 100%;
 }
 
-button:hover {
-  background-color: var(--themeSecondaryColor);
-  border: 1px solid var(--themeMainColor);
-  color: var(--themeMainColor);
-}
-
 .passInput {
   position: relative;
 }
@@ -354,7 +348,10 @@ button:hover {
 
 .countDown h1 {
   font-family: 'Sometype Mono', monospace;
-  margin: 0.25em 0 0.5em;
+  margin: 0 0 0.5em;
+  background: var(--whiteToBlack);
+  padding: 0.25em 0.7em;
+  border-radius: var(--borderRadius);
 }
 
 .itemLine {
@@ -384,24 +381,17 @@ button:hover {
 }
 
 #logout {
-  margin-left: 16px;
   text-decoration: none;
-  padding: 10px;
   transition: all 0.3s ease;
   border: none;
-  font-size: 1em;
+}
+#logout:hover {
+  color: var(--themeErrorColor);
 }
 
 .modal {
-  width: 50vw;
-  min-width: 300px;
   background: #fff;
-  padding: calc(30px + 2vw);
-  border-radius: 1em;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
+  border-radius: var(--borderRadius);
   border: none;
   text-align: center;
 }
@@ -409,25 +399,36 @@ button:hover {
   background: hsl(0 0% 0% / 70%);
 }
 
+.modal-content {
+  background-color: #fefefe;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column;
+  padding: 1em;
+}
+
+.modal-actions {
+  margin-top: 1em;
+}
+
 /* DateModal (background) */
 .dateModal {
   display: block;
-  position: fixed;
-  z-index: 1;
-  left: 0;
   top: 0;
   width: 100vw;
   height: 100%;
   overflow: auto;
   background-color: rgba(0,0,0,0.5);
   border: none;
-  padding: 0;
   transition: all 0.25s cubic-bezier(.62,.32,.62,1.19);
   transform: scale(0);
 }
 
 /* DateModal Content */
-.modal-content {
+.dateModal .modal-content {
   background-color: #fefefe;
   box-sizing: border-box;
   padding: calc(20px + 2vw);
@@ -437,7 +438,7 @@ button:hover {
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
-  border-radius: 1em;
+  border-radius: var(--borderRadius);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -470,7 +471,9 @@ button:hover {
 
 .react-datepicker {
   margin: 1em 0;
+  font-family: inherit !important;
 }
+
 .dateModal button {
   margin-top: 1em;
   font-size: 0.9em;
@@ -486,13 +489,15 @@ button:hover {
 }
 
 .kid-card {
-  border-radius: 10px;
+  border-radius: var(--borderRadius);
   padding: 16px;
   margin-bottom: 12px;
   background: hsl(var(--bg-h), var(--bg-s), calc(var(--bg-l) + 7%));
   position: relative;
 }
-
+.kid-nameNdate {
+  margin-bottom: 0.5em;
+}
 .kid-name {
   display: block;
   font-size: 1.2em;
@@ -502,6 +507,12 @@ button:hover {
   display: grid;
   gap: 0.5em;
   font-size: 0.85em;
+}
+
+.buttonLine {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
 }
 
 .kid-card-number {
@@ -568,4 +579,56 @@ button:hover {
   height: calc(10em + 5vw);
   width: calc(10em + 5vw);
   margin: 3em auto;
+}
+
+/************* DarkThemeSwitch ***************/
+#themeSwitch {
+  display: inline-flex;
+  width: 36px;
+  height: 20px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border-radius: 50px;
+  cursor: pointer;
+  justify-content: left;
+  align-items: center;
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}
+
+#themeSwitch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggler {
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--themeSecondaryColor);
+  border-radius: 50%;
+  transition: left 0.25s ease;
+  position: absolute;
+  left: -10px;
+  z-index: 2;
+box-shadow: 0 0 3px #fff;
+}
+
+input:checked + .toggler {
+  left: 15px;
+  background-color: #07193d;
+}
+
+input:focus + .toggler {
+  border: 1px solid #ffffff05;
+}
+
+input:checked + .toggler {
+  content: var(--themeMainColor);
+  color: #fff;
 }

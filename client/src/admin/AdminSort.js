@@ -1,6 +1,14 @@
-import { useState, useEffect } from "react";
+import { API_URL } from '../config/env';
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from '../auth/AuthContext';
+import { SlCheck } from "react-icons/sl";
+import { SlClose } from "react-icons/sl";
+import { SlTrash } from "react-icons/sl";
+import { SlSettings } from "react-icons/sl";
 
-const AdminSort = () => {
+const AdminSort = ({actionMessage}) => {
+
+  const { userID } = useContext(AuthContext);
   const [kids, setKids] = useState([]);
   const [sortField, setSortField] = useState("kid_surname");
   const [sortDirection, setSortDirection] = useState("asc");
@@ -61,6 +69,38 @@ const AdminSort = () => {
     }
   };
 
+  const handleDeleteKid = (kidId) => {
+      actionMessage(
+        "Určite chcete odstrániť dieťa z aplikácie?",
+        async () => {
+          try {
+            const response = await fetch(`${API_URL}/api/deletekid/${kidId}`, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                "x-user-id": userID  // pass the current user ID
+              }
+            });
+  
+            if (!response.ok) {
+              const errorData = await response.json();
+              console.error("Failed to delete kid:", errorData.message || errorData);
+              return;
+            }
+  
+            // Only update state if delete succeeded
+            setKids((prev) =>
+              prev.filter((kid) => kid.kid_id !== kidId)
+            );
+  
+            //setEditingKidId(null);
+          } catch (err) {
+            console.error("Delete kid request failed:", err);
+          }
+        }
+      );
+    };
+
   return (
     <div>
       <p>Zoradiť podľa:</p>
@@ -96,8 +136,9 @@ const AdminSort = () => {
               }
               />
 
-              <button onClick={() => handleSave(kid.kid_id)}>Uložiť</button>
-              <button onClick={() => setEditingId(null)}>Zrušiť</button>
+              <button className='confirm' onClick={() => handleSave(kid.kid_id)}>Uložiť <SlCheck /></button>
+              <button className='cancel' onClick={() => setEditingId(null)}>Zrušiť <SlClose /></button>
+              <button className='delete' onClick={() => handleDeleteKid(kid.kid_id)}>Odstrániť <SlTrash /></button>
             </>
           ) : (
             <>
@@ -118,7 +159,7 @@ const AdminSort = () => {
                     kid_birth: kid.kid_birth?.slice(0, 10)
                   });
                 }}>
-                  Upraviť
+                  Upraviť <SlSettings />
                 </button>
               </div>
             </>
