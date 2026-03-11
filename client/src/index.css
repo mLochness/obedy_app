@@ -384,6 +384,7 @@ select {
   text-decoration: none;
   transition: all 0.3s ease;
   border: none;
+  cursor: pointer;
 }
 #logout:hover {
   color: var(--themeErrorColor);
@@ -584,7 +585,7 @@ select {
 /************* DarkThemeSwitch ***************/
 #themeSwitch {
   display: inline-flex;
-  width: 36px;
+  width: 46px;
   height: 20px;
   position: relative;
   left: 50%;
@@ -616,11 +617,11 @@ select {
   position: absolute;
   left: -10px;
   z-index: 2;
-box-shadow: 0 0 3px #fff;
+  box-shadow: 0 0 3px #fff;
 }
 
 input:checked + .toggler {
-  left: 15px;
+  left: 25px;
   background-color: #07193d;
 }
 

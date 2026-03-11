@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { LuSun } from "react-icons/lu";
 import { LuMoon } from "react-icons/lu";
 
-const ToggleDarkMode = () => {
+const ToggleDarkMode = ({ closeMenu }) => {
 
     const [isChecked, setIsChecked] = useState(false);
     const [theme, setTheme] = useState(() => {
@@ -11,7 +11,10 @@ const ToggleDarkMode = () => {
 
     const toggleDarkMode = () => {
         setTheme(prev => (prev === "dark" ? "light" : "dark"));
-        setIsChecked(prev =>(prev === true ? false : true));
+        setIsChecked(prev => (prev === true ? false : true));
+        setTimeout(() => {
+            closeMenu();
+        }, 250);
     };
 
     useEffect(() => {

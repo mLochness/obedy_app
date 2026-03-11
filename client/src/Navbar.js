@@ -80,7 +80,7 @@ const Navbar = () => {
                 <li onClick={closeMenu}>{userRole === "user" && <Link to="/addkid">Pridať dieťa</Link>}</li>
                 <li onClick={closeMenu}>{!token && <Link id="login" to="/login">Prihlásenie ☻</Link>}</li>
                 <li onClick={closeMenu}>{token && <Logout />}</li>
-                <li onClick={closeMenu}><ToggleDarkMode /></li>
+                <li><ToggleDarkMode closeMenu={closeMenu}/></li>
             </ul>
         </nav>
     );

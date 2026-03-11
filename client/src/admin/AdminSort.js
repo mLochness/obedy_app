@@ -6,7 +6,7 @@ import { SlClose } from "react-icons/sl";
 import { SlTrash } from "react-icons/sl";
 import { SlSettings } from "react-icons/sl";
 
-const AdminSort = ({actionMessage}) => {
+const AdminSort = ({ actionMessage }) => {
 
   const { userID } = useContext(AuthContext);
   const [kids, setKids] = useState([]);
@@ -69,46 +69,51 @@ const AdminSort = ({actionMessage}) => {
     }
   };
 
+  const getArrow = (field) => {
+    if (sortField !== field) return "";
+    return sortDirection === "asc" ? " ▲" : " ▼";
+  };
+
   const handleDeleteKid = (kidId) => {
-      actionMessage(
-        "Určite chcete odstrániť dieťa z aplikácie?",
-        async () => {
-          try {
-            const response = await fetch(`${API_URL}/api/deletekid/${kidId}`, {
-              method: "DELETE",
-              headers: {
-                "Content-Type": "application/json",
-                "x-user-id": userID  // pass the current user ID
-              }
-            });
-  
-            if (!response.ok) {
-              const errorData = await response.json();
-              console.error("Failed to delete kid:", errorData.message || errorData);
-              return;
+    actionMessage(
+      "Určite chcete odstrániť dieťa z aplikácie?",
+      async () => {
+        try {
+          const response = await fetch(`${API_URL}/api/deletekid/${kidId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "x-user-id": userID  // pass the current user ID
             }
-  
-            // Only update state if delete succeeded
-            setKids((prev) =>
-              prev.filter((kid) => kid.kid_id !== kidId)
-            );
-  
-            //setEditingKidId(null);
-          } catch (err) {
-            console.error("Delete kid request failed:", err);
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Failed to delete kid:", errorData.message || errorData);
+            return;
           }
+
+          // Only update state if delete succeeded
+          setKids((prev) =>
+            prev.filter((kid) => kid.kid_id !== kidId)
+          );
+
+          //setEditingKidId(null);
+        } catch (err) {
+          console.error("Delete kid request failed:", err);
         }
-      );
-    };
+      }
+    );
+  };
 
   return (
     <div>
       <p>Zoradiť podľa:</p>
       <div className="sortBtnCon">
-        <button onClick={() => handleSort("kid_surname")}>Priezvisko</button>
-        <button onClick={() => handleSort("kid_birth")}>Vek</button>
-        <button onClick={() => handleSort("total_skips")}>Počet odhlásení</button>
-        <button onClick={() => handleSort("added_time")}>Pridané dňa</button>
+        <button onClick={() => handleSort("kid_surname")}>Priezvisko{getArrow("kid_surname")}</button>
+        <button onClick={() => handleSort("kid_birth")}>Vek{getArrow("kid_birth")}</button>
+        <button onClick={() => handleSort("total_skips")}>Počet odhlásení{getArrow("total_skips")}</button>
+        <button onClick={() => handleSort("added_time")}>Pridané dňa{getArrow("added_time")}</button>
       </div>
 
       {sortedKids.map((kid, index) => (
@@ -149,7 +154,7 @@ const AdminSort = ({actionMessage}) => {
                 <div>Odhlásení: {kid.total_skips || 0}</div>
                 <div>Naposledy: {kid.last_skip?.slice(0, 10) || "-"}</div>
                 <div>Pridané: {kid.added_time.slice(0, 10
-                  
+
                 )}</div>
                 <button onClick={() => {
                   setEditingId(kid.kid_id);
