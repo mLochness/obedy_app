@@ -4,14 +4,12 @@ import { LuMoon } from "react-icons/lu";
 
 const ToggleDarkMode = ({ closeMenu }) => {
 
-    const [isChecked, setIsChecked] = useState(false);
     const [theme, setTheme] = useState(() => {
         return localStorage.getItem("theme") || "light";
     });
 
     const toggleDarkMode = () => {
         setTheme(prev => (prev === "dark" ? "light" : "dark"));
-        setIsChecked(prev => (prev === true ? false : true));
         setTimeout(() => {
             closeMenu();
         }, 250);
@@ -27,8 +25,8 @@ const ToggleDarkMode = ({ closeMenu }) => {
         //     {theme === "dark" ? "Light Mode" : "Dark Mode"}
         // </button>
         <label id="themeSwitch">
-            <input type="checkbox" id="darkCheckbox" onChange={toggleDarkMode} />
-            <div className="toggler">{isChecked ? <LuMoon /> : <LuSun />}</div>
+            <input type="checkbox" id="darkCheckbox" checked={theme === "dark"} onChange={toggleDarkMode} />
+            <div className="toggler" data={theme === "dark" ? "DARK" : "LIGHT"}>{theme === "dark" ? <LuMoon /> : <LuSun />}</div>
         </label>
     );
 
