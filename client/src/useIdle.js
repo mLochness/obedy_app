@@ -1,8 +1,8 @@
 import {useState } from 'react';
 import {useIdleTimer} from 'react-idle-timer'
 
-const useIdle = ({ onIdle, idleTime=1 }) => {
-    const [isIdle, setIsIdle] = useState();
+const useIdle = ({ onIdle, idleTime=1, token }) => {
+    const [isIdle, setIsIdle] = useState(false);
 
     const handleOnIdle = event => {
         setIsIdle(true);

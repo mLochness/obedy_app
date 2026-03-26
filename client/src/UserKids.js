@@ -1,9 +1,9 @@
 import { API_URL } from './config/env';
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from './auth/AuthContext';
 
-import DatePicker, { registerLocale } from "react-datepicker";
+import { DatePicker, registerLocale } from "react-datepicker";
 import sk from "date-fns/locale/sk";
 import { addDays } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
@@ -20,7 +20,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
   const [data, setData] = useState();
   const [kidsList, setKidsList] = useState([]);
   const [errors, setErrors] = useState([]);
-  const [kidID, setKidId] = useState(null);
+  //const [kidID, setKidId] = useState(null);
   const [isPending, setIsPending] = useState(true);
   const [kidName, setKidName] = useState(null);
   const [modalKidId, setModalKidId] = useState(null);
@@ -52,32 +52,31 @@ const UserKids = ({ actionMessage, skipDate }) => {
 
   const nextSkipDate = skipDate;
 
-  const skip = { kidID, skipDate };
-
-  const fetchUserKids = () => {
+  const fetchUserKids = useCallback(() => {
     setErrors([]);
     const checkSkip = { nextSkipDate, userID };
     setIsPending(true);
     setDatesArr([]);
 
-    fetch(`${API_URL}/api/userkids?user_id=` + userID, {
-      method: 'POST',
+    fetch(`${API_URL}/api/userkids?user_id=${userID}`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(checkSkip)
+      body: JSON.stringify(checkSkip),
     })
       .then((res) => res.json())
-      .then((d) => { setData(d) })
-      .then(() => { setIsPending(false); })
-      .then(() => {
-      })
-      .catch((err) => {
-        setErrors([err.message]);
-      });
-  }
+      .then((d) => setData(d))
+      .catch((err) => setErrors([err.message]))
+      .finally(() => setIsPending(false));
+  }, [userID, nextSkipDate, setErrors, setIsPending, setDatesArr, setData]);
+  // include everything the function depends on
 
   useEffect(() => {
-    userID && fetchUserKids();
-  }, [userID]);
+    if (userID) {
+      fetchUserKids();
+    }
+  }, [userID, fetchUserKids]);
+
+
 
   useEffect(() => {
     if (data) {
@@ -143,7 +142,7 @@ const UserKids = ({ actionMessage, skipDate }) => {
         if (data.message === "success") {
           setIsPending(false);
           actionMessage("Dieťa bolo odhlásené na zvolené termíny");
-          setKidId(null);
+          //setKidId(null);
           setDatesArr(null);
           fetchUserKids();
         } else {
@@ -162,14 +161,13 @@ const UserKids = ({ actionMessage, skipDate }) => {
   const handleInfoButton = async (kid_id, kid_name, kid_surname) => {
     setErrors([]);
     setIsPending(true);
-    setKidId(kid_id);
+    //setKidId(kid_id);
     setKidName(`${kid_name} ${kid_surname}`);
-    const kidID = { kid_id };
 
     fetch(`${API_URL}/api/kidskiplist`, {
       method: 'POST',
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(kidID)
+      body: JSON.stringify({ kid_id })
     }).then((res) => res.json())
       .then((d) => {
         setIsPending(false);

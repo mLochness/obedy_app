@@ -212,7 +212,7 @@ button {
 }
 button:hover {
   background-color: var(--themeMainColor);
-  color: var(--themeBackgroundColor);
+  color: white;
 }
 .confirm:hover {
   background-color: var(--themeMainColor);
@@ -386,6 +386,12 @@ select {
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
+  background: none;
+  font-size: initial;
+  color: #333;
+  margin: 0;
+  padding: 1em;
+  box-shadow: none;
 }
 #logout:hover {
   color: var(--themeErrorColor);
@@ -515,6 +521,13 @@ select {
   display: flex;
   flex-flow: row;
   flex-wrap: wrap;
+}
+
+.kid-card .editForms {
+  display: grid;
+  column-gap: 0.5em;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  margin-bottom: 0.5em;
 }
 
 .kid-card-number {

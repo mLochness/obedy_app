@@ -14,9 +14,11 @@ const AdminSort = ({ actionMessage }) => {
   const [sortDirection, setSortDirection] = useState("asc");
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [isPending, setIsPending] = useState(false);
 
   const handleSave = async (id) => {
-    const response = await fetch(`/api/editkid/${id}`, {
+    setIsPending(true);
+    const response = await fetch(`${API_URL}/api/editkid/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editForm),
@@ -26,7 +28,7 @@ const AdminSort = ({ actionMessage }) => {
       console.error("Update failed");
       return;
     }
-
+    setIsPending(false);
     // Update local state instead of refetching
     setKids(prev =>
       prev.map(k =>
@@ -39,11 +41,16 @@ const AdminSort = ({ actionMessage }) => {
 
 
   useEffect(() => {
-    fetch("/api/sortall")
+    setIsPending(true);
+    fetch(`${API_URL}/api/sortall`, {
+      method: 'GET',
+      headers: { "Content-Type": "application/json" },
+    })
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        setIsPending(false);
         return response.json();
       })
       .then(data => {
@@ -116,62 +123,67 @@ const AdminSort = ({ actionMessage }) => {
         <button onClick={() => handleSort("added_time")}>Pridané dňa{getArrow("added_time")}</button>
       </div>
 
-      {sortedKids.map((kid, index) => (
-        <div className="kid-card"
-          key={kid.kid_id}
-        >
-          <div className="kid-card-number">
-            {String(index + 1).padStart(3, "0")}
+      {isPending ? (<p>Loading...</p>) : (
+        sortedKids.map((kid, index) => (
+          <div className="kid-card"
+            key={kid.kid_id}
+          >
+            <div className="kid-card-number">
+              {String(index + 1).padStart(3, "0")}
+            </div>
+
+            {editingId === kid.kid_id ? (
+              <>
+                <div className='editForms'>
+                  <input value={editForm.kid_name} onChange={(e) =>
+                    setEditForm({ ...editForm, kid_name: e.target.value })
+                  }
+                  />
+
+                  <input value={editForm.kid_surname} onChange={(e) =>
+                    setEditForm({ ...editForm, kid_surname: e.target.value })
+                  }
+                  />
+
+                  <input type="date" value={editForm.kid_birth?.slice(0, 10)} onChange={(e) =>
+                    setEditForm({ ...editForm, kid_birth: e.target.value })
+                  }
+                  />
+                </div>
+
+                <button className='confirm' onClick={() => handleSave(kid.kid_id)}>Uložiť <SlCheck /></button>
+                <button className='cancel' onClick={() => setEditingId(null)}>Zrušiť <SlClose /></button>
+                <button className='delete' onClick={() => handleDeleteKid(kid.kid_id)}>Odstrániť <SlTrash /></button>
+              </>
+            ) : (
+              <>
+                <strong className="kid-name">{kid.kid_name} {kid.kid_surname}</strong>
+                <div className="kid-info">
+                  <div>Nar.: {kid.kid_birth.slice(0, 10)}</div>
+                  <div>Rodič: {kid.username}</div>
+                  <div>Odhlásení: {kid.total_skips || 0}</div>
+                  <div>Naposledy: {kid.last_skip?.slice(0, 10) || "-"}</div>
+                  <div>Pridané: {kid.added_time.slice(0, 10
+
+                  )}</div>
+                  <button onClick={() => {
+                    setEditingId(kid.kid_id);
+                    setEditForm({
+                      kid_name: kid.kid_name,
+                      kid_surname: kid.kid_surname,
+                      kid_birth: kid.kid_birth?.slice(0, 10)
+                    });
+                  }}>
+                    Upraviť <SlSettings />
+                  </button>
+                </div>
+              </>
+            )}
+
           </div>
-
-          {editingId === kid.kid_id ? (
-            <>
-              <input value={editForm.kid_name} onChange={(e) =>
-                setEditForm({ ...editForm, kid_name: e.target.value })
-              }
-              />
-
-              <input value={editForm.kid_surname} onChange={(e) =>
-                setEditForm({ ...editForm, kid_surname: e.target.value })
-              }
-              />
-
-              <input type="date" value={editForm.kid_birth?.slice(0, 10)} onChange={(e) =>
-                setEditForm({ ...editForm, kid_birth: e.target.value })
-              }
-              />
-
-              <button className='confirm' onClick={() => handleSave(kid.kid_id)}>Uložiť <SlCheck /></button>
-              <button className='cancel' onClick={() => setEditingId(null)}>Zrušiť <SlClose /></button>
-              <button className='delete' onClick={() => handleDeleteKid(kid.kid_id)}>Odstrániť <SlTrash /></button>
-            </>
-          ) : (
-            <>
-              <strong className="kid-name">{kid.kid_name} {kid.kid_surname}</strong>
-              <div className="kid-info">
-                <div>Nar.: {kid.kid_birth.slice(0, 10)}</div>
-                <div>Rodič: {kid.username}</div>
-                <div>Odhlásení: {kid.total_skips || 0}</div>
-                <div>Naposledy: {kid.last_skip?.slice(0, 10) || "-"}</div>
-                <div>Pridané: {kid.added_time.slice(0, 10
-
-                )}</div>
-                <button onClick={() => {
-                  setEditingId(kid.kid_id);
-                  setEditForm({
-                    kid_name: kid.kid_name,
-                    kid_surname: kid.kid_surname,
-                    kid_birth: kid.kid_birth?.slice(0, 10)
-                  });
-                }}>
-                  Upraviť <SlSettings />
-                </button>
-              </div>
-            </>
-          )}
-
-        </div>
-      ))}
+        ))
+      )
+      }
 
     </div>
   );

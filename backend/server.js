@@ -21,6 +21,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.set('view engine', 'pug');
 
 // MySQL pool
 const pool = mysql.createPool({
@@ -32,6 +33,11 @@ const pool = mysql.createPool({
 });
 
 // ----------------- ROUTES ------------------
+
+// Example route
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Express routes work!' });
+});
 
 // Get cutoff
 app.get("/api/cutoff", async (req, res) => {
@@ -308,8 +314,12 @@ app.put("/api/editkid/:id", async (req, res) => {
   }
 });
 
+// Error handling (Express 5)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({ error: err.message });
+});
 
 // Start server
-app.listen(3001, () => {
-  console.log('Server started on port 3001...');
-});
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

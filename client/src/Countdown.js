@@ -91,7 +91,7 @@ const Countdown = ({ dateUpdate, cutoffConfig }) => {
         {pad(nextCutoff.getDate())}-
         {pad(nextCutoff.getMonth() + 1)}-
         {nextCutoff.getFullYear()}{" • "}
-        {cutoffConfig.cutoffHour}: {cutoffConfig.cutoffMinute}</strong>
+        {cutoffConfig.cutoffHour}:{cutoffConfig.cutoffMinute}</strong>
         {" "}ostáva
       </p>
 

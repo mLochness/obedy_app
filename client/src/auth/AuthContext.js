@@ -4,51 +4,42 @@ import { useNavigate } from 'react-router-dom';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  //const [isToken, setIsToken] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("loginStorage") || "");
   // const [token, setToken] = useState(sessionStorage.getItem("loginStorage") || "");
-  const [isPending, setIsPending] = useState(true); 
+  const [isPending, setIsPending] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const [userID, setUserID] = useState(null);
   const redirect = useNavigate();
-  
- 
+
+
   useEffect(() => {
     const loginObj = localStorage.getItem("loginStorage");
-    //const loginObj = sessionStorage.getItem("loginStorage");
 
-    if (loginObj) {
-      const loginObjParsed = JSON.parse(loginObj);
-      const storedToken = loginObjParsed.accessToken;
-      const uRole = loginObjParsed.userRole;
-      const uID = loginObjParsed.userID;
-      //const userName = loginObjParsed.userName;
-      setToken(storedToken);
-      setIsPending(false);
-      setUserRole(uRole);
-      setUserID(uID)
-      //console.log('AuthContext useEffect, token:', token );
-      if (uRole === "user") {
-        console.log("Auth - user role?:", uRole);
-        redirect('/udashboard');
-      }
-      else if (uRole === "admin") {
-        console.log("Auth - user role?:", uRole);
-        redirect('/adashboard');
-      }
-      else {
+    if (!loginObj) return;
+    const { accessToken, userRole: uRole, userID: uID } = JSON.parse(loginObj);
+
+    setToken(accessToken);
+    setIsPending(false);
+    setUserRole(uRole);
+    setUserID(uID);
+
+    switch (uRole) {
+      case "user":
+        redirect("/udashboard");
+        break;
+      case "admin":
+        redirect("/adashboard");
+        break;
+      default:
         setUserRole(null);
-        redirect('/login');
-        console.log("AuthLogout - userRole:", userRole)
-      }
-    } 
-
+        redirect("/login");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  console.log('AuthContext run');
 
 
-  const contextValue = useMemo (
+  const contextValue = useMemo(
     () => ({
       token,
       setToken,

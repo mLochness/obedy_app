@@ -18,7 +18,7 @@ const Logout = () => {
     };
 
     return (
-        <a id="logout" onClick={handleLogout}>Odhlásiť <SlLogout /></a>
+        <button id="logout" onClick={handleLogout}>Odhlásiť <SlLogout /></button>
     );
 
 };

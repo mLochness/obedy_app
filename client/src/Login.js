@@ -28,7 +28,6 @@ const Login = () => {
 
     setIsPending(true);
 
-    //fetch('http://localhost:3001/login', {
     fetch(`${API_URL}/api/login`, {
       method: 'POST',
       mode: 'cors',
@@ -39,7 +38,6 @@ const Login = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        //console.log("response data:", data);
 
         if (data.message === "success") {
           
@@ -49,7 +47,6 @@ const Login = () => {
             userName: data.user_name,
             userRole: data.user_role,
           }
-          console.log("to storage:", data.accessToken, data.user_id, data.user_name, data.user_role);
           localStorage.setItem("loginStorage", JSON.stringify(loginStorageObj));
           //sessionStorage.setItem("loginStorage", JSON.stringify(loginStorageObj));
           setToken(data.accessToken);

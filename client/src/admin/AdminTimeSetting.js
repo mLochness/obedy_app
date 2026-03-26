@@ -1,3 +1,4 @@
+import { API_URL } from '../config/env';
 import { useState, useEffect } from "react";
 
 const AdminTimeSetting = ({ cutoffConfig, modalMsg, onCutoffChange }) => {
@@ -24,7 +25,7 @@ const AdminTimeSetting = ({ cutoffConfig, modalMsg, onCutoffChange }) => {
             `Nastaviť nový čas uzávierky na ${String(cutoffHour).padStart(2, "0")}:${String(cutoffMinute).padStart(2, "0")}?`,
             async () => {
                 try {
-                    const response = await fetch("/api/cutoff", {
+                    const response = await fetch(`${API_URL}/api/cutoff`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({

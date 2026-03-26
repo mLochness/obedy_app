@@ -1,3 +1,4 @@
+import { API_URL } from './config/env';
 import { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import PrivateRoutes from './PrivateRoutes';
@@ -38,42 +39,42 @@ const App = () => {
   };
 
   const [cutoffConfig, setCutoffConfig] = useState({
-  cutoffHour: 7,
-  cutoffMinute: 30
-});
+    cutoffHour: 7,
+    cutoffMinute: 30
+  });
 
   const handleDateUpdate = (data) => {
     data && setNextSkipDate(data);
   };
 
   useEffect(() => {
-  fetch("/api/cutoff")
-    .then(res => res.json())
-    .then(data => setCutoffConfig({
-      cutoffHour: data.cutoff_hour,
-      cutoffMinute: data.cutoff_minute
-    }));
-}, []);
-
-useEffect(() => {
-  const interval = setInterval(() => {
-    fetch("/api/cutoff")
+    fetch(`${API_URL}/api/cutoff`)
       .then(res => res.json())
-      .then(data => {
-        setCutoffConfig({
-          cutoffHour: data.cutoff_hour,
-          cutoffMinute: data.cutoff_minute
-        });
-      });
-  }, 30000); // check for cutoff time changes every 30s
-
-  return () => clearInterval(interval);
-}, []);
+      .then(data => setCutoffConfig({
+        cutoffHour: data.cutoff_hour,
+        cutoffMinute: data.cutoff_minute
+      }));
+  }, []);
 
   useEffect(() => {
-    handleDateUpdate()
-    console.log("App - nextSkipDate:", nextSkipDate);
-  }, [])
+    const interval = setInterval(() => {
+      fetch(`${API_URL}/api/cutoff`)
+        .then(res => res.json())
+        .then(data => {
+          setCutoffConfig({
+            cutoffHour: data.cutoff_hour,
+            cutoffMinute: data.cutoff_minute
+          });
+        });
+    }, 30000); // check for cutoff time changes every 30s
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // useEffect(() => {
+  //   handleDateUpdate()
+  //   console.log("App - nextSkipDate:", nextSkipDate);
+  // }, [])
 
 
   return (
@@ -82,18 +83,19 @@ useEffect(() => {
       {cutoffConfig && (<Countdown cutoffConfig={cutoffConfig} dateUpdate={handleDateUpdate} />)}
       <div className="content">
         <Routes>
-          {/* <Route exact path="/" element={userRole ? ( <UserDashboard /> ) : ( <Home /> )} /> */}
-          <Route exact path="/" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup modalMsg={modalMsg} signupOK={handleOpenModal} />} />
+
           <Route element={<PrivateRoutes modalMsg={modalMsg} idleLogout={handleOpenModal} />}>
-            <Route element={<UserDashboard modalMsg={modalMsg} skipDate={nextSkipDate} />} path="/udashboard" />
-            <Route element={<AdminDashboard modalMsg={modalMsg} />} path="/adashboard" />
-            <Route element={<AdminTimeSetting modalMsg={modalMsg} cutoffConfig={cutoffConfig} onCutoffChange={setCutoffConfig}/>} path="/timeset" />
-            <Route element={<AddKid modalMsg={modalMsg} addKidMsg={handleOpenModal} />} path="/addkid" />
-            <Route element={<KidsList />} path="/kids" />
-            <Route element={<UsersList />} path="/users" />
+            <Route path="/udashboard" element={<UserDashboard modalMsg={modalMsg} skipDate={nextSkipDate} />} />
+            <Route path="/adashboard" element={<AdminDashboard modalMsg={modalMsg} />} />
+            <Route path="/timeset" element={<AdminTimeSetting modalMsg={modalMsg} cutoffConfig={cutoffConfig} onCutoffChange={setCutoffConfig} />} />
+            <Route path="/addkid" element={<AddKid modalMsg={modalMsg} addKidMsg={handleOpenModal} />} />
+            <Route path="/kids" element={<KidsList />} />
+            <Route path="/users" element={<UsersList />} />
           </Route>
+
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Modal

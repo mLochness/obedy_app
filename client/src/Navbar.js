@@ -6,7 +6,8 @@ import ToggleDarkMode from './ToggleDarkMode';
 
 const Navbar = () => {
 
-    const { token, userRole, setUserRole } = useContext(AuthContext);
+    const { token, userRole } = useContext(AuthContext);
+    
 
     // burger menu ************** >>
     const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +22,7 @@ const Navbar = () => {
         setIsOpen(false);
     };
 
-    // 👇 Close when clicking outside
+    // Close when clicking outside
     useEffect(() => {
         function handleClickOutside(event) {
             if (
@@ -41,12 +42,6 @@ const Navbar = () => {
         };
     }, [isOpen]);
     
-    useEffect(() => {
-        setUserRole(userRole);
-    }, [token])
-
-    
-
     return (
         <nav className="navbar">
             <h1>Dnes&nbsp;nejeme</h1>
